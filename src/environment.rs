@@ -1,6 +1,7 @@
 const SIZE: usize = 100;
 
 
+#[derive(Clone, Copy)]
 pub struct Cell {
     pub home_pheromone_concentration: f64,
     pub food_pheromone_concentration: f64,
@@ -11,7 +12,7 @@ pub struct Cell {
 
 
 pub struct Environment {
-    pub world: [[Cell; SIZE]; Size],
+    pub world: [[Cell; SIZE]; SIZE],
 }
 
 
@@ -31,7 +32,7 @@ impl Cell {
 impl Environment {
     pub fn new() -> Environment {
         Environment {
-            world: [[Cell::new(); Size]; Size],
+            world: [[Cell::new(); SIZE]; SIZE],
         }
     }
 }
