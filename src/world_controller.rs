@@ -1,6 +1,9 @@
 use piston::input::GenericEvent;
 
-use crate::world::World;
+use crate::World;
+
+
+const DIFFUSION_RATE: f64 = 0.9;
 
 
 pub struct WorldController {
@@ -15,11 +18,16 @@ impl WorldController {
         }
     }
 
-    fn update_environment() {
-
+    fn update_environment(&mut self) {
+        for grid_row in self.world.environment.grid.iter_mut() {
+            for grid_cell in grid_row.iter_mut() {
+                grid_cell.home_pheromone_concentration *= DIFFUSION_RATE;
+                grid_cell.food_pheromone_concentration *= DIFFUSION_RATE;
+            }
+        }
     }
 
-    fn update_colony() {
+    fn update_colony(&self) {
 
     }
 
@@ -29,4 +37,17 @@ impl WorldController {
             self.update_colony();
         }
     }    
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn update_environment() {
+        let mut world_controller = WorldController::new(World::new());
+        world_controller.world.environment.grid[0][0].home_pheromone_concentration = 1.0;
+        world_controller.update_environment();
+        assert_eq!(world_controller.world.environment.grid[0][0].home_pheromone_concentration, 0.9);
+    }
 }

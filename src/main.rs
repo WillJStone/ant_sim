@@ -11,9 +11,15 @@ use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
 
 
+pub use crate::colony::Colony;
 pub use crate::environment::Environment;
+pub use crate::world::World;
+pub use crate::world_controller::WorldController;
 
+mod colony;
 mod environment;
+mod world;
+mod world_controller;
 
 
 fn main() {

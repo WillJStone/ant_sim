@@ -12,7 +12,8 @@ pub struct Cell {
 
 
 pub struct Environment {
-    pub world: [[Cell; SIZE]; SIZE],
+    pub size: usize,
+    pub grid: [[Cell; SIZE]; SIZE],
 }
 
 
@@ -32,7 +33,8 @@ impl Cell {
 impl Environment {
     pub fn new() -> Environment {
         Environment {
-            world: [[Cell::new(); SIZE]; SIZE],
+            size: SIZE,
+            grid: [[Cell::new(); SIZE]; SIZE],
         }
     }
 }

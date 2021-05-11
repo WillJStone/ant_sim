@@ -1,6 +1,7 @@
 const NUM_ANTS: usize = 10;
 
 
+#[derive(Clone, Copy)]
 pub struct Ant {
     pub movement_speed: u8,
     pub perception_distance: u8,

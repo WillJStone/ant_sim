@@ -3,8 +3,8 @@ use crate::environment::Environment;
 
 
 pub struct World {
-    colony: Colony,
-    environment: Environment,
+    pub colony: Colony,
+    pub environment: Environment,
 }
 
 
