@@ -33,7 +33,7 @@ impl WorldView {
     }
 
     pub fn draw<G: Graphics>(&self, controller: &WorldController, c: &Context, g: &mut G) {
-        use graphics::{Rectangle, rectangle, Transformed};
+        use graphics::{Rectangle, rectangle};
 
         let ref settings = self.settings;
         let ant_vis = Rectangle::new(self.settings.ant_color);

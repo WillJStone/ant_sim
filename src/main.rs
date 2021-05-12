@@ -31,7 +31,7 @@ const RESOLUTION: usize = PIXEL_SIZE * ARENA_SIZE;
 
 fn main() {
     let opengl = OpenGL::V3_2;
-    let settings = WindowSettings::new("Ant Colony Simulation", [500; 2])
+    let settings = WindowSettings::new("Ant Colony Simulation", [RESOLUTION as f64; 2])
         .graphics_api(opengl)
         .exit_on_esc(true);
 
@@ -46,7 +46,7 @@ fn main() {
 
     let mut world_controller = WorldController::new(
         Colony::new(NUM_ANTS), 
-        Environment::new(DIFFUSION_RATE)
+        Environment::new(ARENA_SIZE, DIFFUSION_RATE)
     );
     let world_view = WorldView::new(WorldViewSettings::new());
 
