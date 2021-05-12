@@ -6,10 +6,6 @@ use crate::Colony;
 use crate::Environment;
 
 
-
-const DIFFUSION_RATE: f64 = 0.9;
-
-
 pub struct WorldController {
     pub colony: Colony,
     pub environment: Environment,
@@ -27,8 +23,8 @@ impl WorldController {
     fn update_environment(&mut self) {
         for grid_row in self.environment.grid.iter_mut() {
             for grid_cell in grid_row.iter_mut() {
-                grid_cell.home_pheromone_concentration *= DIFFUSION_RATE;
-                grid_cell.food_pheromone_concentration *= DIFFUSION_RATE;
+                grid_cell.home_pheromone_concentration *= self.environment.diffusion_rate;
+                grid_cell.food_pheromone_concentration *= self.environment.diffusion_rate;
             }
         }
     }
@@ -56,7 +52,7 @@ mod tests {
     use super::*;
     #[test]
     fn update_environment() {
-        let mut world_controller = WorldController::new(Colony::new(), Environment::new());
+        let mut world_controller = WorldController::new(Colony::new(10), Environment::new(0.9));
         world_controller.environment.grid[0][0].home_pheromone_concentration = 1.0;
         world_controller.update_environment();
         assert_eq!(world_controller.environment.grid[0][0].home_pheromone_concentration, 0.9);
@@ -64,7 +60,7 @@ mod tests {
 
     #[test]
     fn update_colony() {
-        let mut world_controller = WorldController::new(Colony::new(), Environment::new());
+        let mut world_controller = WorldController::new(Colony::new(10), Environment::new(0.9));
         world_controller.update_colony();
         assert_ne!(world_controller.colony.ants[0].location, [0, 0]);
     }

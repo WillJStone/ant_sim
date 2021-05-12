@@ -22,6 +22,13 @@ mod world_controller;
 mod world_view;
 
 
+const NUM_ANTS: usize = 100;
+const ARENA_SIZE: usize = 100;
+const DIFFUSION_RATE: f64 = 0.9;
+const PIXEL_SIZE: usize = 4;
+const RESOLUTION: usize = PIXEL_SIZE * ARENA_SIZE;
+
+
 fn main() {
     let opengl = OpenGL::V3_2;
     let settings = WindowSettings::new("Ant Colony Simulation", [500; 2])
@@ -37,7 +44,10 @@ fn main() {
     let mut events = Events::new(event_settings);
     let mut gl = GlGraphics::new(opengl);
 
-    let mut world_controller = WorldController::new(Colony::new(), Environment::new());
+    let mut world_controller = WorldController::new(
+        Colony::new(NUM_ANTS), 
+        Environment::new(DIFFUSION_RATE)
+    );
     let world_view = WorldView::new(WorldViewSettings::new());
 
     while let Some(e) = events.next(&mut window) {
