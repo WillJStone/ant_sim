@@ -14,10 +14,12 @@ use opengl_graphics::{OpenGL, GlGraphics};
 pub use crate::colony::Colony;
 pub use crate::environment::Environment;
 pub use crate::world_controller::WorldController;
+pub use crate::world_view::{WorldView, WorldViewSettings};
 
 mod colony;
 mod environment;
 mod world_controller;
+mod world_view;
 
 
 fn main() {
@@ -29,17 +31,23 @@ fn main() {
     let mut window: GlutinWindow = settings.build()
         .expect("Could not create window");
     let event_settings: EventSettings = EventSettings::new()
-        .max_fps(25)
-        .ups(5);
+        .max_fps(30)
+        .ups(25);
+
     let mut events = Events::new(event_settings);
     let mut gl = GlGraphics::new(opengl);
 
+    let mut world_controller = WorldController::new(Colony::new(), Environment::new());
+    let world_view = WorldView::new(WorldViewSettings::new());
+
     while let Some(e) = events.next(&mut window) {
+        world_controller.event(&e);
         if let Some(args) = e.render_args() {
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
 
                 clear([1.0; 4], g);
+                world_view.draw(&world_controller, &c, g);
             });
         }
     }

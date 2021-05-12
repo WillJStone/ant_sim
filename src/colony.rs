@@ -1,4 +1,4 @@
-const NUM_ANTS: usize = 10;
+const NUM_ANTS: usize = 100;
 
 
 #[derive(Clone, Copy)]
