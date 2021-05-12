@@ -44,10 +44,9 @@ fn main() {
     let mut events = Events::new(event_settings);
     let mut gl = GlGraphics::new(opengl);
 
-    let mut world_controller = WorldController::new(
-        Colony::new(NUM_ANTS), 
-        Environment::new(ARENA_SIZE, DIFFUSION_RATE)
-    );
+    let colony = Colony::new(NUM_ANTS);
+    let environment = Environment::new(ARENA_SIZE, DIFFUSION_RATE);
+    let mut world_controller = WorldController::new(colony, environment);
     let world_view = WorldView::new(WorldViewSettings::new());
 
     while let Some(e) = events.next(&mut window) {
@@ -56,7 +55,7 @@ fn main() {
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
 
-                clear([1.0; 4], g);
+                clear([0.0; 4], g);
                 world_view.draw(&world_controller, &c, g);
             });
         }

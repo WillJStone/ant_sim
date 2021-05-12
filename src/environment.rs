@@ -6,8 +6,8 @@ pub struct Cell {
     pub coordinates: [usize; 2],
     pub home_pheromone_concentration: f64,
     pub food_pheromone_concentration: f64,
+    pub food_amount: f64,
     pub contains_ant: bool,
-    pub contains_food: bool,
     pub is_nest: bool,
 }
 
@@ -25,8 +25,8 @@ impl Cell {
             coordinates: coordinates,
             home_pheromone_concentration: 0.0,
             food_pheromone_concentration: 0.0,
+            food_amount: 0.0,
             contains_ant: false,
-            contains_food: false,
             is_nest: false,
         }
     }
@@ -41,14 +41,35 @@ impl Environment {
                 grid[i][j].coordinates = [i, j];
             }
         }
-        Environment {
+        let mut environment = Environment {
             diffusion_rate: diffusion_rate,
             size: SIZE,
             grid: grid,
+        };
+        environment.set_nest_area();
+        environment.place_food();
+
+        environment
+    }
+
+    fn set_nest_area(&mut self) {
+        for i in 0..5 {
+            for j in 0..5 {
+                self.grid[i][j].is_nest = true;
+            }
+        }
+    }
+
+    fn place_food(&mut self) {
+        for i in self.size - 5..self.size {
+            for j in self.size - 5..self.size {
+                self.grid[i][j].food_amount = 1.0;
+            }
         }
     }
 
     pub fn perceive_surroundings(&self, index: [usize; 2]) -> Vec<Cell> {
+        // I really hate this function :(
         let i = index[0];
         let j = index[1];
         let can_go_left = if (i as i32 - 1) < 0 {false} else {true};
