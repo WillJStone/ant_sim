@@ -9,6 +9,7 @@ pub struct Cell {
     pub food_amount: f64,
     pub contains_ant: bool,
     pub is_nest: bool,
+    pub is_traversable: bool,
 }
 
 
@@ -28,6 +29,7 @@ impl Cell {
             food_amount: 0.0,
             contains_ant: false,
             is_nest: false,
+            is_traversable: true,
         }
     }
 }
@@ -52,17 +54,24 @@ impl Environment {
         environment
     }
 
+    fn pad_edges(&mut self) {
+        for i in 0..self.size {
+            self.grid[i][0].is_traversable = false;
+            self.grid[0][i].is_traversable = false;
+        }
+    }
+
     fn set_nest_area(&mut self) {
-        for i in 0..5 {
-            for j in 0..5 {
+        for i in 1..6 {
+            for j in 1..6 {
                 self.grid[i][j].is_nest = true;
             }
         }
     }
 
     fn place_food(&mut self) {
-        for i in self.size - 5..self.size {
-            for j in self.size - 5..self.size {
+        for i in (self.size - 6)..(self.size - 1)  {
+            for j in (self.size - 6)..(self.size - 1) {
                 self.grid[i][j].food_amount = 1.0;
             }
         }
