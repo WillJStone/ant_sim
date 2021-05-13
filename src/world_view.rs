@@ -55,10 +55,8 @@ impl WorldView {
         }
     }
 
-    pub fn draw<G: Graphics>(&self, controller: &WorldController, c: &Context, g: &mut G) {
+    fn draw_colony<G: Graphics>(&self, controller: &WorldController, c: &Context, g: &mut G) {
         use graphics::{Rectangle, rectangle};
-        self.draw_environment(controller, c, g);
-
         let ref settings = self.settings;
         let ant_vis = Rectangle::new(self.settings.ant_color);
 
@@ -71,5 +69,12 @@ impl WorldView {
 
             ant_vis.draw(square, &c.draw_state, c.transform, g);
         }
+    }
+
+    pub fn draw<G: Graphics>(&self, controller: &WorldController, c: &Context, g: &mut G) {
+        self.draw_environment(controller, c, g);
+        self.draw_colony(controller, c, g);
+
+        
     }
 }
