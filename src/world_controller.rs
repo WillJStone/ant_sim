@@ -23,7 +23,7 @@ impl WorldController {
     fn update_environment(&mut self) {
         for grid_row in self.environment.grid.iter_mut() {
             for grid_cell in grid_row.iter_mut() {
-                grid_cell.home_pheromone_concentration *= self.environment.diffusion_rate;
+                grid_cell.nest_pheromone_concentration *= self.environment.diffusion_rate;
                 grid_cell.food_pheromone_concentration *= self.environment.diffusion_rate;
             }
         }
@@ -32,6 +32,12 @@ impl WorldController {
     fn update_colony(&mut self) {
         // Move every ant randomly for now
         for ant in self.colony.ants.iter_mut() {
+            if ant.has_food {
+                self.environment.place_food_pheromone(ant.location);
+            } else {
+                self.environment.place_nest_pheromone(ant.location);
+            }
+            
             let surroundings = self.environment.perceive_surroundings(ant.location);
             let traversable_cells: Vec<&Cell> = surroundings.iter().filter(|&cell| cell.is_traversable).collect();
             let new_cell = traversable_cells.choose(&mut rand::thread_rng()).unwrap();
@@ -54,9 +60,9 @@ mod tests {
     #[test]
     fn update_environment() {
         let mut world_controller = WorldController::new(Colony::new(10), Environment::new(100, 0.9));
-        world_controller.environment.grid[0][0].home_pheromone_concentration = 1.0;
+        world_controller.environment.grid[0][0].nest_pheromone_concentration = 1.0;
         world_controller.update_environment();
-        assert_eq!(world_controller.environment.grid[0][0].home_pheromone_concentration, 0.9);
+        assert_eq!(world_controller.environment.grid[0][0].nest_pheromone_concentration, 0.9);
     }
 
     #[test]
