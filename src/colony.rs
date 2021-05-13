@@ -13,7 +13,7 @@ pub struct Colony {
 impl Ant {
     pub fn new() -> Ant {
         Ant {
-            location: [0; 2],
+            location: [1; 2],
             has_food: false,
         }
     }

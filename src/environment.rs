@@ -48,6 +48,7 @@ impl Environment {
             size: SIZE,
             grid: grid,
         };
+        environment.pad_edges();
         environment.set_nest_area();
         environment.place_food();
 
@@ -57,7 +58,9 @@ impl Environment {
     fn pad_edges(&mut self) {
         for i in 0..self.size {
             self.grid[i][0].is_traversable = false;
+            self.grid[i][self.size -1].is_traversable = false;
             self.grid[0][i].is_traversable = false;
+            self.grid[self.size -1][i].is_traversable = false;
         }
     }
 
@@ -78,43 +81,55 @@ impl Environment {
     }
 
     pub fn perceive_surroundings(&self, index: [usize; 2]) -> Vec<Cell> {
-        // I really hate this function :(
-        let i = index[0];
-        let j = index[1];
-        let can_go_left = if (i as i32 - 1) < 0 {false} else {true};
-        let can_go_down = if (j as i32 - 1) < 0 {false} else {true};
-        let can_go_right = if (i + 1) >= self.size {false} else {true};
-        let can_go_up = if (j + 1) >= self.size {false} else {true};
-
         let mut surroundings: Vec<Cell> = Vec::new();
+        for i in (index[0] - 1)..(index[0] + 2) {
+            for j in (index[1] -1)..(index[1] + 2) {
+                surroundings.push(self.grid[i][j]);
+            }
+        }
 
-        if can_go_left {
-            surroundings.push(self.grid[i - 1][j]);
-        }
-        if can_go_up {
-            surroundings.push(self.grid[i][j + 1]);
-        }
-        if can_go_down {
-            surroundings.push(self.grid[i][j - 1]);
-        }
-        if can_go_right {
-            surroundings.push(self.grid[i + 1][j]);
-        }
-        if can_go_left && can_go_up { 
-            surroundings.push(self.grid[i - 1][j + 1]);
-        }
-        if can_go_left && can_go_down {
-            surroundings.push(self.grid[i - 1][j - 1]);
-        }
-        if can_go_right && can_go_up {
-            surroundings.push(self.grid[i + 1][j + 1]);
-        }
-        if can_go_right && can_go_down {
-            surroundings.push(self.grid[i + 1][j - 1]);
-        }        
 
         surroundings
     }
+
+    // pub fn perceive_surroundings(&self, index: [usize; 2]) -> Vec<Cell> {
+    //     // I really hate this function :(
+    //     let i = index[0];
+    //     let j = index[1];
+    //     let can_go_left = if (i as i32 - 1) < 0 {false} else {true};
+    //     let can_go_down = if (j as i32 - 1) < 0 {false} else {true};
+    //     let can_go_right = if (i + 1) >= self.size {false} else {true};
+    //     let can_go_up = if (j + 1) >= self.size {false} else {true};
+
+    //     let mut surroundings: Vec<Cell> = Vec::new();
+
+    //     if can_go_left {
+    //         surroundings.push(self.grid[i - 1][j]);
+    //     }
+    //     if can_go_up {
+    //         surroundings.push(self.grid[i][j + 1]);
+    //     }
+    //     if can_go_down {
+    //         surroundings.push(self.grid[i][j - 1]);
+    //     }
+    //     if can_go_right {
+    //         surroundings.push(self.grid[i + 1][j]);
+    //     }
+    //     if can_go_left && can_go_up { 
+    //         surroundings.push(self.grid[i - 1][j + 1]);
+    //     }
+    //     if can_go_left && can_go_down {
+    //         surroundings.push(self.grid[i - 1][j - 1]);
+    //     }
+    //     if can_go_right && can_go_up {
+    //         surroundings.push(self.grid[i + 1][j + 1]);
+    //     }
+    //     if can_go_right && can_go_down {
+    //         surroundings.push(self.grid[i + 1][j - 1]);
+    //     }        
+
+    //     surroundings
+    // }
 }
 
 #[cfg(test)]

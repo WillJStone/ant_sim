@@ -3,7 +3,7 @@ use rand;
 use rand::seq::SliceRandom;
 
 use crate::Colony;
-use crate::Environment;
+use crate::environment::{Cell, Environment};
 
 
 pub struct WorldController {
@@ -33,7 +33,8 @@ impl WorldController {
         // Move every ant randomly for now
         for ant in self.colony.ants.iter_mut() {
             let surroundings = self.environment.perceive_surroundings(ant.location);
-            let new_cell = surroundings.choose(&mut rand::thread_rng()).unwrap();
+            let traversable_cells: Vec<&Cell> = surroundings.iter().filter(|&cell| cell.is_traversable).collect();
+            let new_cell = traversable_cells.choose(&mut rand::thread_rng()).unwrap();
             ant.location = new_cell.coordinates;
         }
     }
