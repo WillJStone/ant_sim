@@ -1,6 +1,3 @@
-const SIZE: usize = 100;
-
-
 #[derive(Clone, Copy)]
 pub struct Cell {
     pub coordinates: [usize; 2],
@@ -41,14 +38,14 @@ impl Cell {
 impl Environment {
     pub fn new(arena_size: usize, diffusion_rate: f64) -> Environment {
         let mut grid = vec![vec![Cell::new([0, 0]); arena_size]; arena_size];
-        for i in 0..SIZE {
-            for j in 0..SIZE {
+        for i in 0..arena_size {
+            for j in 0..arena_size {
                 grid[i][j].coordinates = [i, j];
             }
         }
         let mut environment = Environment {
             diffusion_rate: diffusion_rate,
-            size: SIZE,
+            size: arena_size,
             grid: grid,
         };
         environment.pad_edges();
