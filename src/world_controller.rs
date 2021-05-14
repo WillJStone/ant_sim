@@ -32,16 +32,42 @@ impl WorldController {
     fn update_colony(&mut self) {
         // Move every ant randomly for now
         for ant in self.colony.ants.iter_mut() {
-            if ant.has_food {
-                self.environment.place_food_pheromone(ant.location);
-            } else {
-                self.environment.place_nest_pheromone(ant.location);
-            }
-            
             let surroundings = self.environment.perceive_surroundings(ant.location);
             let traversable_cells: Vec<&Cell> = surroundings.iter().filter(|&cell| cell.is_traversable).collect();
-            let new_cell = traversable_cells.choose(&mut rand::thread_rng()).unwrap();
-            ant.location = new_cell.coordinates;
+
+            if ant.has_food {
+                self.environment.place_food_pheromone(ant.location);
+                let max_nest_cell = traversable_cells
+                    .iter()
+                    .max_by(|c1, c2| c1.nest_pheromone_concentration.partial_cmp(&c2.nest_pheromone_concentration).unwrap())
+                    .unwrap();
+
+                ant.location = max_nest_cell.coordinates;
+            } else {
+                self.environment.place_nest_pheromone(ant.location);
+                let max_food_cell = traversable_cells
+                    .iter()
+                    .max_by(|c1, c2| c1.food_pheromone_concentration.partial_cmp(&c2.food_pheromone_concentration).unwrap())
+                    .unwrap();
+                let min_nest_cell = traversable_cells
+                    .iter()
+                    .min_by(|c1, c2| c1.nest_pheromone_concentration.partial_cmp(&c2.nest_pheromone_concentration).unwrap())
+                    .unwrap();
+
+                if max_food_cell.food_pheromone_concentration == 0.0 {
+                    if rand::random::<f64>() > 0.5 {
+                        ant.location = min_nest_cell.coordinates;
+                    } else {
+                        let random_traversable_cell = traversable_cells.choose(&mut rand::thread_rng()).unwrap();
+                        ant.location = random_traversable_cell.coordinates;
+                    }
+                } else {
+                    ant.location = max_food_cell.coordinates;
+                }
+            }
+
+            // let new_cell = traversable_cells.choose(&mut rand::thread_rng()).unwrap();
+            //ant.location = new_cell.coordinates;
         }
     }
 
