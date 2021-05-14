@@ -7,7 +7,6 @@ pub struct Cell {
     pub nest_pheromone_concentration: f64,
     pub food_pheromone_concentration: f64,
     pub food_amount: f64,
-    pub contains_ant: bool,
     pub is_nest: bool,
     pub is_traversable: bool,
 }
@@ -27,10 +26,14 @@ impl Cell {
             nest_pheromone_concentration: 0.0,
             food_pheromone_concentration: 0.0,
             food_amount: 0.0,
-            contains_ant: false,
             is_nest: false,
             is_traversable: true,
         }
+    }
+
+    fn update(&mut self, diffusion_rate: f64) {
+        self.nest_pheromone_concentration *= diffusion_rate;
+        self.food_pheromone_concentration *= diffusion_rate;
     }
 }
 
@@ -98,6 +101,14 @@ impl Environment {
 
         surroundings
     }
+
+    pub fn update(&mut self) {
+        for grid_row in self.grid.iter_mut() {
+            for cell in grid_row.iter_mut() {
+                cell.update(self.diffusion_rate);
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -109,3 +120,10 @@ mod tests {
         assert_eq!(environment.grid[1][1].coordinates, [1, 1]);
     }
 }
+    #[test]
+    fn update_environment() {
+        let mut environment = Environment::new(100, 0.9);
+        environment.grid[0][0].nest_pheromone_concentration = 1.0;
+        environment.update();
+        assert_eq!(environment.grid[0][0].nest_pheromone_concentration, 0.9);
+    }

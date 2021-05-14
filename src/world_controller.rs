@@ -83,7 +83,7 @@ impl WorldController {
 
     pub fn event<E: GenericEvent>(&mut self, e: &E) {
         if let Some(_) = e.update_args() {
-            self.update_environment();
+            self.environment.update();
             self.update_colony();
         }
     }    
