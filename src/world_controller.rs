@@ -35,6 +35,16 @@ impl WorldController {
             let surroundings = self.environment.perceive_surroundings(ant.location);
             let traversable_cells: Vec<&Cell> = surroundings.iter().filter(|&cell| cell.is_traversable).collect();
 
+            let max_food_cell = traversable_cells
+                .iter()
+                .max_by(|c1, c2| c1.food_amount.partial_cmp(&c2.food_amount).unwrap())
+                .unwrap();
+
+            if max_food_cell.food_amount > 0.0 {
+                self.environment.grid[max_food_cell.coordinates[0]][max_food_cell.coordinates[1]].food_amount -= 0.1;
+                ant.has_food = true;
+            }
+
             if ant.has_food {
                 self.environment.place_food_pheromone(ant.location);
                 let max_nest_cell = traversable_cells

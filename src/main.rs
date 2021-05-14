@@ -38,8 +38,8 @@ fn main() {
     let mut window: GlutinWindow = settings.build()
         .expect("Could not create window");
     let event_settings: EventSettings = EventSettings::new()
-        .max_fps(30)
-        .ups(25);
+        .max_fps(50)
+        .ups(50);
 
     let mut events = Events::new(event_settings);
     let mut gl = GlGraphics::new(opengl);
