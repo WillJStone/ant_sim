@@ -111,9 +111,11 @@ impl Environment {
     }
 
     pub fn update<E: GenericEvent>(&mut self, e: &E) {
-        for grid_row in self.grid.iter_mut() {
-            for cell in grid_row.iter_mut() {
-                cell.update(self.diffusion_rate);
+        if let Some(_) = e.update_args() {
+            for grid_row in self.grid.iter_mut() {
+                for cell in grid_row.iter_mut() {
+                    cell.update(self.diffusion_rate);
+                }
             }
         }
     }

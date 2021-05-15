@@ -18,7 +18,6 @@ pub use crate::world_view::{WorldView, WorldViewSettings};
 
 mod colony;
 mod environment;
-mod world_controller;
 mod world_view;
 
 
