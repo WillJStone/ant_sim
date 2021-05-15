@@ -1,10 +1,8 @@
 use glm::Vec2;
 use na::Point2;
 use piston::input::GenericEvent;
-use rand;
-use rand::seq::SliceRandom;
 
-use crate::environment::{Cell, Environment};
+use crate::environment::Environment;
 use crate::utils::{random_unit_vector, random_rotation};
 
 
@@ -35,12 +33,12 @@ impl Ant {
         }
     }
 
-    fn update(&mut self, environment: &mut Environment) {
+    fn update_position(&mut self, environment: &Environment) {
         let mut new_coordinates = self.coordinates + self.direction * self.velocity;
         let mut new_grid_cell_indices = [new_coordinates.x as usize, new_coordinates.y as usize];
 
         // If this move runs up against a non-traversable cell, turn around and make another move
-        if !environment.grid[new_grid_cell_indices[0]][new_grid_cell_indices[1]].is_traversable {
+        if !environment.cell_is_traversable(new_grid_cell_indices) {
             self.direction *= -1.0;
             new_coordinates = self.coordinates + self.direction * self.velocity;
             new_grid_cell_indices = [new_coordinates.x as usize, new_coordinates.y as usize];
@@ -48,6 +46,10 @@ impl Ant {
         
         self.coordinates = new_coordinates;
         self.grid_location = new_grid_cell_indices;
+    }
+
+    fn update(&mut self, environment: &mut Environment) {
+        self.update_position(environment);
         self.direction = random_rotation(&self.direction);
     }
 }

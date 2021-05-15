@@ -99,6 +99,23 @@ impl Environment {
         self.grid[index[0]][index[1]].food_pheromone_concentration = 1.0;
     }
 
+    pub fn cell_has_food(&self, index: [usize; 2]) -> bool {
+        let cell = self.grid[index[0]][index[1]];
+        if cell.food_amount > 0.0 {
+            return true
+        }
+
+        false
+    }
+
+    pub fn cell_is_traversable(&self, index: [usize; 2]) -> bool {
+        if self.grid[index[0]][index[1]].is_traversable {
+            return true
+        }
+
+        false
+    }
+
     pub fn perceive_surroundings(&self, index: [usize; 2]) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
         for i in (index[0] - 1)..(index[0] + 2) {
