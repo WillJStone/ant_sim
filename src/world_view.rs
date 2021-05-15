@@ -59,21 +59,21 @@ impl WorldView {
         }
     }
 
-    fn draw_colony<G: Graphics>(&self, colony: &Colony, c: &Context, g: &mut G) {
-        use graphics::{Rectangle, rectangle};
-        let ref settings = self.settings;
-        let ant_vis = Rectangle::new(self.settings.ant_color);
+    // fn draw_colony<G: Graphics>(&self, colony: &Colony, c: &Context, g: &mut G) {
+    //     use graphics::{Rectangle, rectangle};
+    //     let ref settings = self.settings;
+    //     let ant_vis = Rectangle::new(self.settings.ant_color);
 
-        for ant in colony.ants.iter() {
-            let square = rectangle::square(
-                (ant.location[0] * settings.pixel_size) as f64, 
-                (ant.location[1] * settings.pixel_size) as f64, 
-                self.settings.pixel_size as f64
-            );
+    //     for ant in colony.ants.iter() {
+    //         let square = rectangle::square(
+    //             (ant.location[0] * settings.pixel_size) as f64, 
+    //             (ant.location[1] * settings.pixel_size) as f64, 
+    //             self.settings.pixel_size as f64
+    //         );
 
-            ant_vis.draw(square, &c.draw_state, c.transform, g);
-        }
-    }
+    //         ant_vis.draw(square, &c.draw_state, c.transform, g);
+    //     }
+    // }
 
     pub fn draw<G: Graphics>(&self, environment: &Environment, colony: &Colony, c: &Context, g: &mut G) {
         self.draw_environment(environment, c, g);
