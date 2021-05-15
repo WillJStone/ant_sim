@@ -6,14 +6,14 @@ extern crate opengl_graphics;
 
 use piston::window::WindowSettings;
 use piston::event_loop::{Events, EventLoop, EventSettings};
-use piston::input::RenderEvent;
+use piston::input::{GenericEvent, RenderEvent};
 use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
 
 
 pub use crate::colony::Colony;
 pub use crate::environment::Environment;
-pub use crate::world_controller::WorldController;
+// pub use crate::world_controller::WorldController;
 pub use crate::world_view::{WorldView, WorldViewSettings};
 
 mod colony;
@@ -44,19 +44,20 @@ fn main() {
     let mut events = Events::new(event_settings);
     let mut gl = GlGraphics::new(opengl);
 
-    let colony = Colony::new(NUM_ANTS);
-    let environment = Environment::new(ARENA_SIZE, DIFFUSION_RATE);
-    let mut world_controller = WorldController::new(colony, environment);
+    let mut colony = Colony::new(NUM_ANTS);
+    let mut environment = Environment::new(ARENA_SIZE, DIFFUSION_RATE);
     let world_view = WorldView::new(WorldViewSettings::new());
 
     while let Some(e) = events.next(&mut window) {
-        world_controller.event(&e);
+        environment.update(&e);
+        colony.update(&mut environment, &e);
+        
         if let Some(args) = e.render_args() {
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
 
                 clear([0.0; 4], g);
-                world_view.draw(&world_controller, &c, g);
+                world_view.draw(&environment, &colony, &c, g);
             });
         }
     }

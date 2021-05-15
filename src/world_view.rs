@@ -1,7 +1,8 @@
 use graphics::types::Color;
 use graphics::{Context, Graphics};
 
-use crate::world_controller::WorldController;
+use crate::environment::Environment;
+use crate::colony::Colony;
 
 
 pub struct WorldViewSettings {
@@ -32,11 +33,11 @@ impl WorldView {
         }
     }
 
-    fn draw_environment<G: Graphics>(&self, controller: &WorldController, c: &Context, g: &mut G) {
+    fn draw_environment<G: Graphics>(&self, environment: &Environment, c: &Context, g: &mut G) {
         use graphics::{Rectangle, rectangle};
         let nest_cell = Rectangle::new([0.0, 0.0, 1.0, 0.5]);
 
-        for (i, grid_row) in controller.environment.grid.iter().enumerate() {
+        for (i, grid_row) in environment.grid.iter().enumerate() {
             for (j, cell) in grid_row.iter().enumerate() {
                 let square = rectangle::square(
                     (i * self.settings.pixel_size) as f64, 
@@ -58,12 +59,12 @@ impl WorldView {
         }
     }
 
-    fn draw_colony<G: Graphics>(&self, controller: &WorldController, c: &Context, g: &mut G) {
+    fn draw_colony<G: Graphics>(&self, colony: &Colony, c: &Context, g: &mut G) {
         use graphics::{Rectangle, rectangle};
         let ref settings = self.settings;
         let ant_vis = Rectangle::new(self.settings.ant_color);
 
-        for ant in controller.colony.ants.iter() {
+        for ant in colony.ants.iter() {
             let square = rectangle::square(
                 (ant.location[0] * settings.pixel_size) as f64, 
                 (ant.location[1] * settings.pixel_size) as f64, 
@@ -74,8 +75,8 @@ impl WorldView {
         }
     }
 
-    pub fn draw<G: Graphics>(&self, controller: &WorldController, c: &Context, g: &mut G) {
-        self.draw_environment(controller, c, g);
+    pub fn draw<G: Graphics>(&self, environment: &Environment, colony: &Colony, c: &Context, g: &mut G) {
+        self.draw_environment(environment, c, g);
         // self.draw_colony(controller, c, g);
 
         
