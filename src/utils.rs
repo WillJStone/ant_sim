@@ -12,7 +12,7 @@ pub fn random_unit_vector() -> Vec2 {
 
 pub fn random_rotation(vec: &Vec2) -> Vec2 {
     // Take a value, in radians, between 0 and 1, subtract 0.5 so its now in the range
-    // [-0.5, 0.5), divide by 5. So the new direction is +/ 0.1 radians
+    // [-0.5, 0.5), divide by 2. So the new direction is +/ 0.25 radians
     // from the direction of the input vector
     let mut random_radians = rand::random::<f32>();
     random_radians -= 0.5;

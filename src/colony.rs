@@ -50,6 +50,20 @@ impl Ant {
 
     fn update(&mut self, environment: &mut Environment) {
         self.update_position(environment);
+        if environment.cell_has_food(self.grid_location) && !self.has_food {
+            environment.take_food(self.grid_location);
+            self.has_food = true;
+        }
+
+        if environment.cell_is_nest(self.grid_location) && self.has_food {
+            self.has_food = false;
+        }
+
+        if self.has_food {
+            environment.place_food_pheromone(self.grid_location);
+        } else {
+            environment.place_nest_pheromone(self.grid_location);
+        }
         self.direction = random_rotation(&self.direction);
     }
 }

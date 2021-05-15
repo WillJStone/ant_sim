@@ -116,6 +116,18 @@ impl Environment {
         false
     }
 
+    pub fn cell_is_nest(&self, index: [usize; 2]) -> bool {
+        if self.grid[index[0]][index[1]].is_nest {
+            return true
+        }
+
+        false
+    }
+
+    pub fn take_food(&mut self, index: [usize; 2]) {
+        self.grid[index[0]][index[1]].food_amount -= 0.1;
+    }
+
     pub fn perceive_surroundings(&self, index: [usize; 2]) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
         for i in (index[0] - 1)..(index[0] + 2) {

@@ -26,7 +26,7 @@ mod utils;
 
 const NUM_ANTS: usize = 200;
 const ARENA_SIZE: usize = 100;
-const DIFFUSION_RATE: f64 = 0.9;
+const DIFFUSION_RATE: f64 = 0.98;
 const PIXEL_SIZE: usize = 4;
 const RESOLUTION: usize = PIXEL_SIZE * ARENA_SIZE;
 
