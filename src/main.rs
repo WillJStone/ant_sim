@@ -2,11 +2,13 @@ extern crate piston;
 extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
+extern crate nalgebra as na;
+extern crate nalgebra_glm as glm;
 
 
 use piston::window::WindowSettings;
 use piston::event_loop::{Events, EventLoop, EventSettings};
-use piston::input::{GenericEvent, RenderEvent};
+use piston::input::RenderEvent;
 use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
 
@@ -19,6 +21,7 @@ pub use crate::world_view::{WorldView, WorldViewSettings};
 mod colony;
 mod environment;
 mod world_view;
+mod utils;
 
 
 const NUM_ANTS: usize = 200;

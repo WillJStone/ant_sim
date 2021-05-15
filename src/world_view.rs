@@ -49,35 +49,35 @@ impl WorldView {
                 } else if cell.food_amount > 0.0 {
                     Rectangle::new([0.0, 1.0, 0.0, cell.food_amount as f32])
                         .draw(square, &c.draw_state, c.transform, g);
-                } else {
-                    Rectangle::new([1.0, 0.0, 0.0, cell.nest_pheromone_concentration as f32])
-                        .draw(square, &c.draw_state, c.transform, g);
-                    Rectangle::new([0.0, 0.8, 0.1, cell.food_pheromone_concentration as f32])
-                        .draw(square, &c.draw_state, c.transform, g);
-                }
+                } // else {
+                //     Rectangle::new([1.0, 0.0, 0.0, cell.nest_pheromone_concentration as f32])
+                //         .draw(square, &c.draw_state, c.transform, g);
+                //     Rectangle::new([0.0, 0.8, 0.1, cell.food_pheromone_concentration as f32])
+                //         .draw(square, &c.draw_state, c.transform, g);
+                // }
             }
         }
     }
 
-    // fn draw_colony<G: Graphics>(&self, colony: &Colony, c: &Context, g: &mut G) {
-    //     use graphics::{Rectangle, rectangle};
-    //     let ref settings = self.settings;
-    //     let ant_vis = Rectangle::new(self.settings.ant_color);
+    fn draw_colony<G: Graphics>(&self, colony: &Colony, c: &Context, g: &mut G) {
+        use graphics::{Rectangle, rectangle};
+        let ref settings = self.settings;
+        let ant_vis = Rectangle::new(self.settings.ant_color);
 
-    //     for ant in colony.ants.iter() {
-    //         let square = rectangle::square(
-    //             (ant.location[0] * settings.pixel_size) as f64, 
-    //             (ant.location[1] * settings.pixel_size) as f64, 
-    //             self.settings.pixel_size as f64
-    //         );
+        for ant in colony.ants.iter() {
+            let square = rectangle::square(
+                (ant.grid_location[0] * settings.pixel_size) as f64, 
+                (ant.grid_location[1] * settings.pixel_size) as f64, 
+                self.settings.pixel_size as f64
+            );
 
-    //         ant_vis.draw(square, &c.draw_state, c.transform, g);
-    //     }
-    // }
+            ant_vis.draw(square, &c.draw_state, c.transform, g);
+        }
+    }
 
     pub fn draw<G: Graphics>(&self, environment: &Environment, colony: &Colony, c: &Context, g: &mut G) {
         self.draw_environment(environment, c, g);
-        // self.draw_colony(controller, c, g);
+        self.draw_colony(colony, c, g);
 
         
     }
