@@ -1,3 +1,4 @@
+use na::Point2;
 use piston::input::GenericEvent;
 
 
@@ -37,6 +38,10 @@ impl Cell {
 
     pub fn set_food_pheromone_concentration(&mut self) {
         self.food_pheromone_concentration = 1.0;
+    }
+
+    pub fn get_continuous_location(&self) -> Point2<f32> {
+        Point2::new(self.coordinates[0] as f32, self.coordinates[1] as f32)
     }
 
     fn update(&mut self, diffusion_rate: f64) {
@@ -126,6 +131,16 @@ impl Environment {
 
     pub fn take_food(&mut self, index: [usize; 2]) {
         self.grid[index[0]][index[1]].food_amount -= 0.1;
+    }
+
+    pub fn get_cell_from_point(&self, point: Point2<f32>) -> Result<Cell, &str> {
+        let x_coord = point.x as i32;
+        let y_coord = point.y as i32;
+        if x_coord < 0 || x_coord >= self.size as i32 || y_coord < 0 || y_coord >= self.size as i32 {
+            return Err("out of bounds")
+        }
+
+        Ok(self.grid[x_coord as usize][y_coord as usize])
     }
 
     pub fn perceive_surroundings(&self, index: [usize; 2]) -> Vec<Cell> {
