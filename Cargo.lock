@@ -50,6 +50,7 @@ dependencies = [
  "piston2d-opengl_graphics",
  "pistoncore-glutin_window",
  "rand 0.8.3",
+ "rayon",
 ]
 
 [[package]]

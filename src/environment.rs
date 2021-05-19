@@ -1,5 +1,6 @@
 use na::Point2;
 use piston::input::GenericEvent;
+use rayon::prelude::*;
 
 
 #[derive(Clone, Copy)]
@@ -45,6 +46,12 @@ impl Cell {
     }
 
     fn update(&mut self, diffusion_rate: f64) {
+        if self.nest_pheromone_concentration < 0.01 {
+            self.nest_pheromone_concentration = 0.0;
+        }
+        if self.food_pheromone_concentration < 0.01 {
+            self.food_pheromone_concentration = 0.0;
+        }
         self.nest_pheromone_concentration *= diffusion_rate;
         self.food_pheromone_concentration *= diffusion_rate;
     }
@@ -97,11 +104,19 @@ impl Environment {
     }
 
     pub fn place_nest_pheromone(&mut self, index: [usize; 2]) {
-        self.grid[index[0]][index[1]].nest_pheromone_concentration = 1.0;
+        if self.grid[index[0]][index[1]].nest_pheromone_concentration > 0.9 {
+            self.grid[index[0]][index[1]].nest_pheromone_concentration = 1.0;
+        } else {
+            self.grid[index[0]][index[1]].nest_pheromone_concentration += 0.05;
+        }
     }
 
     pub fn place_food_pheromone(&mut self, index: [usize; 2]) {
-        self.grid[index[0]][index[1]].food_pheromone_concentration = 1.0;
+        if self.grid[index[0]][index[1]].food_pheromone_concentration > 0.9 {
+            self.grid[index[0]][index[1]].food_pheromone_concentration = 1.0;
+        } else {
+            self.grid[index[0]][index[1]].food_pheromone_concentration += 0.1;
+        }
     }
 
     pub fn cell_has_food(&self, index: [usize; 2]) -> bool {

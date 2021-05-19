@@ -4,6 +4,7 @@ extern crate graphics;
 extern crate opengl_graphics;
 extern crate nalgebra as na;
 extern crate nalgebra_glm as glm;
+extern crate rayon;
 
 
 use piston::window::WindowSettings;
@@ -25,8 +26,8 @@ mod utils;
 
 
 const NUM_ANTS: usize = 200;
-const ARENA_SIZE: usize = 100;
-const DIFFUSION_RATE: f64 = 0.98;
+const ARENA_SIZE: usize = 50;
+const DIFFUSION_RATE: f64 = 0.99;
 const PIXEL_SIZE: usize = 4;
 const RESOLUTION: usize = PIXEL_SIZE * ARENA_SIZE;
 
@@ -40,8 +41,8 @@ fn main() {
     let mut window: GlutinWindow = settings.build()
         .expect("Could not create window");
     let event_settings: EventSettings = EventSettings::new()
-        .max_fps(50)
-        .ups(50);
+        .max_fps(100)
+        .ups(100);
 
     let mut events = Events::new(event_settings);
     let mut gl = GlGraphics::new(opengl);

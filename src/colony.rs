@@ -32,8 +32,8 @@ impl Ant {
             coordinates: Point2::new(1.0, 1.0),
             direction: random_unit_vector(),
             velocity: 0.5,
-            max_perception_distance: 5.0,
-            field_of_view: std::f32::consts::PI / 2.0,
+            max_perception_distance: 10.0,
+            field_of_view: std::f32::consts::PI / 1.0,
             grid_location: [1; 2],
             has_food: false,
         }
@@ -107,7 +107,7 @@ impl Ant {
                 let max_pheromone_cell = surroundings
                     .iter()
                     .filter(|c| c.food_pheromone_concentration > 0.0)
-                    .min_by(
+                    .max_by(
                         |c1, c2| c1.food_pheromone_concentration.partial_cmp(&c2.food_pheromone_concentration).unwrap()
                     ).unwrap();
                 let max_cell_point = max_pheromone_cell.get_continuous_location();
@@ -124,10 +124,12 @@ impl Ant {
         self.update_position(environment);
         if environment.cell_has_food(self.grid_location) && !self.has_food {
             environment.take_food(self.grid_location);
+            self.direction *= -1.0;
             self.has_food = true;
         }
 
         if environment.cell_is_nest(self.grid_location) && self.has_food {
+            self.direction *= -1.0;
             self.has_food = false;
         }
 
