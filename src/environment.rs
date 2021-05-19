@@ -1,6 +1,5 @@
 use na::Point2;
 use piston::input::GenericEvent;
-use rayon::prelude::*;
 
 
 #[derive(Clone, Copy)]
@@ -189,10 +188,3 @@ mod tests {
         assert_eq!(environment.grid[1][1].coordinates, [1, 1]);
     }
 }
-    // #[test]
-    // fn update_environment() {
-    //     let mut environment = Environment::new(100, 0.9);
-    //     environment.grid[0][0].nest_pheromone_concentration = 1.0;
-    //     environment.update();
-    //     assert_eq!(environment.grid[0][0].nest_pheromone_concentration, 0.9);
-    // }
