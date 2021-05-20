@@ -4,7 +4,7 @@ use piston::input::GenericEvent;
 use rand;
 use std;
 
-use crate::environment::{Cell, Environment};
+use crate::simulation::environment::{Cell, Environment};
 use crate::utils::{random_unit_vector, random_rotation};
 
 

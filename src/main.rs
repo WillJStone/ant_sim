@@ -14,14 +14,11 @@ use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
 
 
-pub use crate::colony::Colony;
-pub use crate::environment::Environment;
-// pub use crate::world_controller::WorldController;
-pub use crate::world_view::{WorldView, WorldViewSettings};
+pub use crate::simulation::colony::Colony;
+pub use crate::simulation::environment::Environment;
+pub use crate::simulation::world_view::{WorldView, WorldViewSettings};
 
-mod colony;
-mod environment;
-mod world_view;
+mod simulation;
 mod utils;
 
 
@@ -60,7 +57,7 @@ fn main() {
                 use graphics::{clear};
 
                 clear([0.0; 4], g);
-                world_view.draw(&environment, &colony, &c, g);
+                world_view.draw(&environment, &c, g);
             });
         }
     }

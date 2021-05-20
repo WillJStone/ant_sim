@@ -1,8 +1,8 @@
 use graphics::types::Color;
 use graphics::{Context, Graphics};
 
-use crate::environment::Environment;
-use crate::colony::Colony;
+use crate::simulation::environment::Environment;
+use crate::simulation::colony::Colony;
 
 
 pub struct WorldViewSettings {
@@ -75,7 +75,7 @@ impl WorldView {
     //     }
     // }
 
-    pub fn draw<G: Graphics>(&self, environment: &Environment, colony: &Colony, c: &Context, g: &mut G) {
+    pub fn draw<G: Graphics>(&self, environment: &Environment, c: &Context, g: &mut G) {
         self.draw_environment(environment, c, g);
         // self.draw_colony(colony, c, g);
 
