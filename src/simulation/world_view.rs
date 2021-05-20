@@ -2,7 +2,7 @@ use graphics::types::Color;
 use graphics::{Context, Graphics};
 
 use crate::simulation::environment::Environment;
-use crate::simulation::colony::Colony;
+// use crate::simulation::colony::Colony;
 
 
 pub struct WorldViewSettings {
