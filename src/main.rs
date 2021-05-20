@@ -19,6 +19,7 @@ pub use crate::simulation::environment::Environment;
 pub use crate::simulation::world_view::{WorldView, WorldViewSettings};
 
 mod simulation;
+mod neural_network;
 mod utils;
 
 
