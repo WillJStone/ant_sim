@@ -2,6 +2,8 @@ use ndarray::{Array, Dim};
 use ndarray_rand::RandomExt;
 use ndarray_rand::rand_distr::Uniform;
 
+use crate::neural_network::utils::relu;
+
 
 struct Layer {
     w: Array<f32, Dim<[usize; 2]>>,
@@ -24,6 +26,6 @@ impl Layer {
     fn forward(&self, input: Array<f32, Dim<[usize; 2]>>) -> Array<f32, Dim<[usize; 2]>> {
         let h = input.dot(&self.w) + &self.b;
 
-        h
+        relu(h)
     }
 }
