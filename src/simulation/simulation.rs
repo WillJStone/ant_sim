@@ -1,8 +1,8 @@
-use core::num;
 use std::f64;
 
 use crate::simulation::colony::Colony;
 use crate::simulation::environment::Environment;
+use crate::neural_network::neural_network::MLP;
 
 
 pub struct Simulation {
@@ -18,9 +18,9 @@ pub struct SimulationResult {
 
 
 impl Simulation {
-    pub fn new(arena_size: usize, diffusion_rate: f64, num_ants: usize) -> Simulation {
+    pub fn new(arena_size: usize, diffusion_rate: f64, num_ants: usize, decision_network: MLP) -> Simulation {
         let environment = Environment::new(arena_size, diffusion_rate);
-        let colony = Colony::new(num_ants);
+        let colony = Colony::new(num_ants, decision_network);
 
         Simulation {
             environment,
@@ -56,13 +56,15 @@ mod tests {
     use super::*;
     #[test]
     fn test_simulation_new() {
-        let simulation = Simulation::new(50, 0.99, 100);
+        let decision_network: MLP = MLP::new(37, vec![16, 2]);
+        let simulation = Simulation::new(50, 0.99, 100, decision_network);
         assert_eq!(simulation.environment.size, 50);
     }
 
     #[test]
     fn test_simulation_run() {
-        let mut simulation = Simulation::new(50, 0.99, 100);
+        let decision_network: MLP = MLP::new(37, vec![16, 2]);
+        let mut simulation = Simulation::new(50, 0.99, 100, decision_network);
         let sim_result = simulation.run(10);
         let fake_sim_result = SimulationResult::new(10, 25.0);
 

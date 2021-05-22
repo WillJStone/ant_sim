@@ -38,7 +38,7 @@ impl Layer {
 }
 
 
-struct MLP {
+pub struct MLP {
     layers: Vec<Layer>,
 }
 

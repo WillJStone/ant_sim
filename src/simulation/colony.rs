@@ -4,6 +4,7 @@ use rand;
 
 use crate::simulation::environment::{Cell, Environment};
 use crate::utils::{get_direction_from_coords, random_unit_vector, random_rotation, normalize_array};
+use crate::neural_network::neural_network::MLP;
 
 
 
@@ -21,7 +22,8 @@ pub struct Ant {
 
 
 pub struct Colony {
-    pub ants: Vec<Ant>,
+    ants: Vec<Ant>,
+    decision_network: MLP,
 }
 
 
@@ -168,9 +170,10 @@ impl Ant {
 
 
 impl Colony {
-    pub fn new(num_ants: usize) -> Colony {
+    pub fn new(num_ants: usize, decision_network: MLP) -> Colony {
         Colony {
             ants: vec![Ant::new(); num_ants],
+            decision_network,
         }
     }
 
