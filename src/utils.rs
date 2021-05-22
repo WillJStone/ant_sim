@@ -1,16 +1,33 @@
-use glm::{Vec2, rotate_vec2};
+use ndarray::{Array, Dim};
 use rand;
 
 
-pub fn random_unit_vector() -> Vec2 {
-    let mut v = Vec2::new(rand::random::<f32>(), rand::random::<f32>());
-    v = glm::normalize(&v);
+pub fn normalize_array(array: Array<f32, Dim<[usize; 1]>>) -> Array<f32, Dim<[usize; 1]>> {
+    let sum_of_squares: f32 = array
+        .iter()
+        .map(|x| f32::powf(*x, 2.))
+        .sum();
 
-    return v
+    array / sum_of_squares.sqrt()
 }
 
 
-pub fn random_rotation(vec: &Vec2, range: f32) -> Vec2 {
+pub fn random_unit_vector() -> Array<f32, Dim<[usize; 1]>> {
+    let v = Array::from(vec![rand::random::<f32>(), rand::random::<f32>()]);
+    
+    normalize_array(v)
+}
+
+
+fn rotate_array2(array: &Array<f32, Dim<[usize; 1]>>, angle: f32) -> Array<f32, Dim<[usize; 1]>> {
+    let x = array[[0]] * angle.cos() - array[[1]] * angle.sin();
+    let y = array[[0]] * angle.sin() + array[[1]] * angle.cos();
+
+    Array::from(vec![x, y])
+}
+
+
+pub fn random_rotation(array: &Array<f32, Dim<[usize; 1]>>, range: f32) -> Array<f32, Dim<[usize; 1]>> {
     // Take a value, in radians, between 0 and 1, subtract 0.5 so its now in the range
     // [-0.5, 0.5), divide by 2. So the new direction is +/ 0.25 radians
     // from the direction of the input vector
@@ -18,7 +35,7 @@ pub fn random_rotation(vec: &Vec2, range: f32) -> Vec2 {
     random_radians -= 0.5;
     random_radians *= range;
 
-    let new_vec = rotate_vec2(vec, random_radians);
+    let new_vec = rotate_array2(array, random_radians);
 
     return new_vec
 }

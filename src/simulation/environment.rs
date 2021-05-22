@@ -1,4 +1,5 @@
 use na::Point2;
+use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 
 
@@ -40,8 +41,8 @@ impl Cell {
         self.food_pheromone_concentration = 1.0;
     }
 
-    pub fn get_continuous_location(&self) -> Point2<f32> {
-        Point2::new(self.coordinates[0] as f32, self.coordinates[1] as f32)
+    pub fn get_continuous_location(&self) -> Array<f32, Dim<[usize; 1]>> {
+        Array::from(vec![self.coordinates[0] as f32, self.coordinates[1] as f32])
     }
 
     fn update(&mut self, diffusion_rate: f64) {
@@ -147,9 +148,9 @@ impl Environment {
         self.grid[index[0]][index[1]].food_amount -= 0.1;
     }
 
-    pub fn get_cell_from_point(&self, point: Point2<f32>) -> Result<Cell, &str> {
-        let x_coord = point.x as i32;
-        let y_coord = point.y as i32;
+    pub fn get_cell_from_point(&self, point: Array<f32, Dim<[usize; 1]>>) -> Result<Cell, &str> {
+        let x_coord = point[[0]] as i32;
+        let y_coord = point[[1]] as i32;
         if x_coord < 0 || x_coord >= self.size as i32 || y_coord < 0 || y_coord >= self.size as i32 {
             return Err("out of bounds")
         }

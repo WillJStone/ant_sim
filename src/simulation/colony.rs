@@ -1,18 +1,18 @@
 use glm::Vec2;
-use na::Point2;
+use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 use rand;
 use std;
 
 use crate::simulation::environment::{Cell, Environment};
-use crate::utils::{random_unit_vector, random_rotation};
+use crate::utils::{random_unit_vector, random_rotation, normalize_array};
 
 
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Ant {
-    pub coordinates: Point2<f32>,
-    pub direction: Vec2,
+    pub coordinates: Array<f32, Dim<[usize; 1]>>,
+    pub direction: Array<f32, Dim<[usize; 1]>>,
     pub velocity: f32,
     pub max_perception_distance: f32,
     pub field_of_view: f32,
@@ -30,7 +30,7 @@ pub struct Colony {
 impl Ant {
     pub fn new() -> Ant {
         Ant {
-            coordinates: Point2::new(1.0, 1.0),
+            coordinates: Array::from(vec![1.0, 1.0]),
             direction: random_unit_vector(),
             velocity: 0.5,
             max_perception_distance: 10.0,
@@ -42,14 +42,14 @@ impl Ant {
     }
 
     fn update_position(&mut self, environment: &Environment) {
-        let mut new_coordinates = self.coordinates + self.direction * self.velocity;
-        let mut new_grid_cell_indices = [new_coordinates.x as usize, new_coordinates.y as usize];
+        let mut new_coordinates = self.coordinates.clone() + self.direction.clone() * self.velocity;
+        let mut new_grid_cell_indices = [new_coordinates[[0]] as usize, new_coordinates[[1]] as usize];
 
         // If this move runs up against a non-traversable cell, turn around and make another move
         if !environment.cell_is_traversable(new_grid_cell_indices) {
             self.direction *= -1.0;
-            new_coordinates = self.coordinates + self.direction * self.velocity;
-            new_grid_cell_indices = [new_coordinates.x as usize, new_coordinates.y as usize];
+            new_coordinates = self.coordinates.clone() + self.direction.clone() * self.velocity;
+            new_grid_cell_indices = [new_coordinates[[0]] as usize, new_coordinates[[1]] as usize];
         }
         
         self.coordinates = new_coordinates;
@@ -62,7 +62,7 @@ impl Ant {
         while surroundings.len() <= self.num_samples {
             let random_direction = random_rotation(&self.direction, self.field_of_view);
             let random_distance = rand::random::<f32>() * self.max_perception_distance;
-            let sample_point = self.coordinates + random_direction * random_distance;
+            let sample_point = self.coordinates.clone() + random_direction * random_distance;
             match environment.get_cell_from_point(sample_point) {
                 Ok(cell) => surroundings.push(cell),
                 Err(_) => continue,
@@ -72,6 +72,20 @@ impl Ant {
         surroundings
     }
 
+    fn get_feature_vector(&self, environment: &mut Environment) -> Array<f32, Dim<[usize; 1]>> {
+        let surroundings = self.perceive_surroundings(environment);
+        let mut feature_vec: Vec<f32> = Vec::new();
+
+        for cell in surroundings.iter() {
+            feature_vec.push(cell.is_nest as i32 as f32); // Have to go through int to get to f32 from bool
+            feature_vec.push(cell.food_amount as f32);
+            feature_vec.push(cell.food_pheromone_concentration as f32);
+            feature_vec.push(cell.nest_pheromone_concentration as f32);
+        }
+
+        Array::from(feature_vec)
+    }
+
     fn update_direction(&mut self, surroundings: Vec<Cell>) {
         if self.has_food {
             // If the ant is holding food, go towards the nest if it's visible, otherwise try
@@ -79,18 +93,16 @@ impl Ant {
             if surroundings.iter().any(|c| c.is_nest) {
                 let nest_cell = surroundings.iter().find(|c| c.is_nest).unwrap();
                 let nest_cell_point = nest_cell.get_continuous_location();
-                let point_difference = nest_cell_point - self.coordinates;
-                let new_direction = Vec2::new(point_difference.x, point_difference.y);
-                self.direction = glm::normalize(&new_direction);
+                let point_difference = nest_cell_point - self.coordinates.clone();
+                self.direction = normalize_array(point_difference);
 
             } else if surroundings.iter().any(|c| c.nest_pheromone_concentration > 0.0) {
                 let max_pheromone_cell = surroundings.iter().max_by(
                     |c1, c2| c1.nest_pheromone_concentration.partial_cmp(&c2.nest_pheromone_concentration).unwrap()
                 ).unwrap();
                 let max_cell_point = max_pheromone_cell.get_continuous_location();
-                let point_difference = max_cell_point - self.coordinates;
-                let new_direction = Vec2::new(point_difference.x, point_difference.y);
-                self.direction = glm::normalize(&new_direction);
+                let point_difference = max_cell_point - self.coordinates.clone();
+                self.direction = normalize_array(point_difference);
 
             } else {
                 self.direction = random_rotation(&self.direction, 0.5);
@@ -101,9 +113,8 @@ impl Ant {
             if surroundings.iter().any(|c| c.food_amount > 0.0) {
                 let food_cell = surroundings.iter().find(|c| c.food_amount > 0.0).unwrap();
                 let food_cell_point = food_cell.get_continuous_location();
-                let point_difference = food_cell_point - self.coordinates;
-                let new_direction = Vec2::new(point_difference.x, point_difference.y);
-                self.direction = glm::normalize(&new_direction);
+                let point_difference = food_cell_point - self.coordinates.clone();
+                self.direction = normalize_array(point_difference);
 
             } else if surroundings.iter().any(|c| c.food_pheromone_concentration > 0.0) {
                 let max_pheromone_cell = surroundings
@@ -113,9 +124,8 @@ impl Ant {
                         |c1, c2| c1.food_pheromone_concentration.partial_cmp(&c2.food_pheromone_concentration).unwrap()
                     ).unwrap();
                 let max_cell_point = max_pheromone_cell.get_continuous_location();
-                let point_difference = max_cell_point - self.coordinates;
-                let new_direction = Vec2::new(point_difference.x, point_difference.y);
-                self.direction = glm::normalize(&new_direction);
+                let point_difference = max_cell_point - self.coordinates.clone();
+                self.direction = normalize_array(point_difference);
             } else {
                 self.direction = random_rotation(&self.direction, 0.5);
             }
