@@ -152,12 +152,16 @@ impl Colony {
         }
     }
 
-    pub fn update<E: GenericEvent>(&mut self, environment: &mut Environment, e: &E) {
+    pub fn update(&mut self, environment: &mut Environment) {
+        for ant in self.ants.iter_mut() {
+            ant.update(environment);
+        }
+    }
+
+    pub fn update_piston<E: GenericEvent>(&mut self, environment: &mut Environment, e: &E) {
         // Move every ant randomly for now
         if let Some(_) = e.update_args() {
-            for ant in self.ants.iter_mut() {
-                ant.update(environment);
-            }
+            self.update(environment);
         }
     }
 }

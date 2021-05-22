@@ -52,8 +52,8 @@ fn main() {
     let world_view = WorldView::new(WorldViewSettings::new());
 
     while let Some(e) = events.next(&mut window) {
-        environment.update(&e);
-        colony.update(&mut environment, &e);
+        environment.update_piston(&e);
+        colony.update_piston(&mut environment, &e);
         
         if let Some(args) = e.render_args() {
             gl.draw(args.viewport(), |c, g| {

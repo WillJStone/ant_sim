@@ -168,13 +168,17 @@ impl Environment {
         surroundings
     }
 
-    pub fn update<E: GenericEvent>(&mut self, e: &E) {
-        if let Some(_) = e.update_args() {
-            for grid_row in self.grid.iter_mut() {
-                for cell in grid_row.iter_mut() {
-                    cell.update(self.diffusion_rate);
-                }
+    pub fn update(&mut self) {
+        for grid_row in self.grid.iter_mut() {
+            for cell in grid_row.iter_mut() {
+                cell.update(self.diffusion_rate);
             }
+        }
+    }
+
+    pub fn update_piston<E: GenericEvent>(&mut self, e: &E) {
+        if let Some(_) = e.update_args() {
+            self.update();
         }
     }
 }
