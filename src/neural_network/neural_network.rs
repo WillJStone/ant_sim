@@ -8,11 +8,12 @@ use crate::neural_network::utils::{relu, reshape_array};
 struct Layer {
     w: Array<f32, Dim<[usize; 2]>>,
     b: Array<f32, Dim<[usize; 2]>>,
+    activation: bool,
 }
 
 
 impl Layer {
-    fn new(num_input: usize, num_output: usize) -> Layer {
+    fn new(num_input: usize, num_output: usize, activation: bool) -> Layer {
         let distribution = Uniform::new(-0.5, 0.5);
         let w = Array::random((num_input, num_output), distribution);
         let b = Array::random((1, num_output), distribution);
@@ -20,20 +21,27 @@ impl Layer {
         Layer {
             w: w,
             b: b,
+            activation,
         }
     }
 
-    fn from_existing_weights(weights: Array<f32, Dim<[usize; 2]>>, bias: Array<f32, Dim<[usize; 2]>>) -> Layer {
+    fn from_existing_weights(weights: Array<f32, Dim<[usize; 2]>>, bias: Array<f32, Dim<[usize; 2]>>, activation: bool) -> Layer {
         Layer {
             w: weights, 
             b: bias,
+            activation,
         }
     }
 
     fn forward(&self, input: Array<f32, Dim<[usize; 2]>>) -> Array<f32, Dim<[usize; 2]>> {
         let h = input.dot(&self.w) + &self.b;
 
-        relu(h)
+        if self.activation {
+            return relu(h)
+        }
+
+        h
+        
     }
 }
 
@@ -48,8 +56,14 @@ impl MLP {
         // NOTE: The last element of the hidden_sizes vector is the output size
         let mut layers: Vec<Layer> = Vec::new();
         let mut num_input = input_dimension;
+        let mut activation: bool;
         for i in 0..hidden_sizes.len() {
-            let layer = Layer::new(num_input, hidden_sizes[i]);
+            if i == hidden_sizes.len() - 1 {
+                activation = false;
+            } else {
+                activation = true
+            }
+            let layer = Layer::new(num_input, hidden_sizes[i], activation);
             layers.push(layer);
             num_input = hidden_sizes[i];
         }
@@ -64,7 +78,13 @@ impl MLP {
             let mut layers: Vec<Layer> = Vec::new();
             let mut num_input = input_dimension;
             let mut current_array_index: usize = 0;
+            let mut activation: bool;
             for i in 0..hidden_sizes.len() {
+                if i == hidden_sizes.len() - 1 {
+                    activation = true;
+                } else {
+                    activation = false;
+                }
                 let w_end = current_array_index + num_input * hidden_sizes[i];
 
                 let array_slice = weight_array.slice(s![current_array_index..w_end]);
@@ -78,7 +98,7 @@ impl MLP {
 
                 num_input = hidden_sizes[i];
 
-                layers.push(Layer::from_existing_weights(w, b));
+                layers.push(Layer::from_existing_weights(w, b, activation));
             }
 
             MLP { layers }
@@ -115,7 +135,7 @@ mod tests {
     use super::*;
     #[test]
     fn new_layer() {
-        let layer = Layer::new(8, 4);
+        let layer = Layer::new(8, 4, true);
         assert_eq!(layer.w.len(), 32);
         assert_eq!(layer.b.len(), 4);
     }
@@ -126,7 +146,7 @@ mod tests {
         let w = Array::random((8, 4), distribution);
         let b = Array::random((1, 4), distribution);
 
-        let layer = Layer::from_existing_weights(w.clone(), b.clone());
+        let layer = Layer::from_existing_weights(w.clone(), b.clone(), true);
 
         assert_eq!(layer.w, w);
         assert_eq!(layer.b, b);
@@ -138,7 +158,7 @@ mod tests {
         let w: Array<f32, Dim<[usize; 2]>> = Array::eye(4);
         let b: Array<f32, Dim<[usize; 2]>> = Array::zeros((1, 4));
         let sample_input = Array::ones((1, 4));
-        let layer = Layer::from_existing_weights(w, b);
+        let layer = Layer::from_existing_weights(w, b, true);
 
         let out = layer.forward(sample_input.clone());
 
