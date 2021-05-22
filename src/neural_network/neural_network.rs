@@ -2,7 +2,7 @@ use ndarray::{Array, Dim};
 use ndarray_rand::RandomExt;
 use ndarray_rand::rand_distr::Uniform;
 
-use crate::neural_network::utils::relu;
+use crate::neural_network::utils::{concat, relu};
 
 
 struct Layer {
@@ -55,6 +55,21 @@ impl MLP {
         }
 
         MLP { layers }
+    }
+
+    pub fn flatten_weights(&self) -> Array<f32, Dim<[usize; 1]>> {
+        let mut flattened_weights: Vec<f32> = Vec::new();
+        for layer in self.layers.iter() {
+            for w in layer.w.iter() {
+                flattened_weights.push(*w)
+            }
+
+            for b in layer.b.iter() {
+                flattened_weights.push(*b);
+            }
+        }
+
+        Array::from(flattened_weights)
     }
 
     pub fn forward(&self, input: Array<f32, Dim<[usize; 2]>>) -> Array<f32, Dim<[usize; 2]>> {
@@ -118,5 +133,12 @@ mod tests {
         let sample_output = mlp.forward(sample_input);
 
         assert_eq!(sample_output.len(), 2);
+    }
+
+    #[test]
+    fn test_flatten_weights() {
+        let mlp = MLP::new(4, vec![2, 2]);
+        let flat_weights = mlp.flatten_weights();
+        assert_eq!(flat_weights.len(), 16);
     }
 }
