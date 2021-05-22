@@ -2,7 +2,7 @@ use ndarray::{Array, Dim};
 use ndarray_rand::RandomExt;
 use ndarray_rand::rand_distr::Uniform;
 
-use crate::neural_network::utils::{concat, relu};
+use crate::neural_network::utils::{relu, reshape_array};
 
 
 struct Layer {
@@ -57,6 +57,33 @@ impl MLP {
         MLP { layers }
     }
 
+    pub fn from_flattened_weights(
+        input_dimension: usize, 
+        hidden_sizes: Vec<usize>, 
+        weight_array: Array<f32, Dim<[usize; 1]>>) -> MLP {
+            let mut layers: Vec<Layer> = Vec::new();
+            let mut num_input = input_dimension;
+            let mut current_array_index: usize = 0;
+            for i in 0..hidden_sizes.len() {
+                let w_end = current_array_index + num_input * hidden_sizes[i];
+
+                let array_slice = weight_array.slice(s![current_array_index..w_end]);
+                let w = reshape_array(array_slice.to_owned(), [num_input, hidden_sizes[i]]);
+                current_array_index = w_end;
+
+                let b_end = current_array_index + hidden_sizes[i];
+                let array_slice = weight_array.slice(s![current_array_index..b_end]);
+                let b = reshape_array(array_slice.to_owned(), [1, hidden_sizes[i]]);
+                current_array_index = b_end;
+
+                num_input = hidden_sizes[i];
+
+                layers.push(Layer::from_existing_weights(w, b));
+            }
+
+            MLP { layers }
+        }
+
     pub fn flatten_weights(&self) -> Array<f32, Dim<[usize; 1]>> {
         let mut flattened_weights: Vec<f32> = Vec::new();
         for layer in self.layers.iter() {
@@ -94,7 +121,7 @@ mod tests {
     }
 
     #[test]
-    fn test_from_existing_weights() {
+    fn test_layer_from_existing_weights() {
         let distribution = Uniform::new(-0.5, 0.5);
         let w = Array::random((8, 4), distribution);
         let b = Array::random((1, 4), distribution);
@@ -124,6 +151,15 @@ mod tests {
 
         assert_eq!(mlp.layers.len(), 2);
         assert_eq!(mlp.layers[0].w.len(), 8);
+    }
+
+    #[test]
+    fn test_mlp_from_flattened_weights() {
+        let mlp = MLP::new(4, vec![2, 2]);
+        let flattened_weights = mlp.flatten_weights();
+        let reconstructed_mlp = MLP::from_flattened_weights(4, vec![2, 2], flattened_weights);
+
+        assert_eq!(mlp.layers[0].w, reconstructed_mlp.layers[0].w);
     }
 
     #[test]

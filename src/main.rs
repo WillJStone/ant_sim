@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate ndarray;
 extern crate piston;
 extern crate glutin_window;
 extern crate graphics;

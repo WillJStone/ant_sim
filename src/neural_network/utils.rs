@@ -31,7 +31,7 @@ pub fn reshape_array(array: Array<f32, Dim<[usize; 1]>>, shape: [usize; 2]) -> A
     let mut new_array: Array<f32, Dim<[usize; 2]>> = Array::zeros(shape);
     for i in 0..shape[0] {
         for j in 0..shape[1] {
-            new_array[[i, j]] = array[[i * shape[0] + j]]
+            new_array[[i, j]] = array[[i * shape[1] + j]]
         }
     }
     new_array
