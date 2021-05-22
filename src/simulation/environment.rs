@@ -1,4 +1,3 @@
-use na::Point2;
 use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 
@@ -148,7 +147,7 @@ impl Environment {
         self.grid[index[0]][index[1]].food_amount -= 0.1;
     }
 
-    pub fn get_cell_from_point(&self, point: Array<f32, Dim<[usize; 1]>>) -> Result<Cell, &str> {
+    pub fn get_cell_from_point(&self, point: &Array<f32, Dim<[usize; 1]>>) -> Result<Cell, &str> {
         let x_coord = point[[0]] as i32;
         let y_coord = point[[1]] as i32;
         if x_coord < 0 || x_coord >= self.size as i32 || y_coord < 0 || y_coord >= self.size as i32 {

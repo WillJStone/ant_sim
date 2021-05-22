@@ -1,11 +1,9 @@
-use glm::Vec2;
 use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 use rand;
-use std;
 
 use crate::simulation::environment::{Cell, Environment};
-use crate::utils::{random_unit_vector, random_rotation, normalize_array};
+use crate::utils::{get_direction_from_coords, random_unit_vector, random_rotation, normalize_array};
 
 
 
@@ -59,11 +57,11 @@ impl Ant {
     fn perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
         // Take 10 samples of the surroundings, maybe make the sample size tunable in future
-        while surroundings.len() <= self.num_samples {
+        while surroundings.len() < self.num_samples {
             let random_direction = random_rotation(&self.direction, self.field_of_view);
             let random_distance = rand::random::<f32>() * self.max_perception_distance;
             let sample_point = self.coordinates.clone() + random_direction * random_distance;
-            match environment.get_cell_from_point(sample_point) {
+            match environment.get_cell_from_point(&sample_point) {
                 Ok(cell) => surroundings.push(cell),
                 Err(_) => continue,
             };
@@ -72,15 +70,27 @@ impl Ant {
         surroundings
     }
 
-    fn get_feature_vector(&self, environment: &mut Environment) -> Array<f32, Dim<[usize; 1]>> {
+    fn _get_feature_vector(&self, environment: &mut Environment) -> Array<f32, Dim<[usize; 1]>> {
         let surroundings = self.perceive_surroundings(environment);
         let mut feature_vec: Vec<f32> = Vec::new();
-
+        let current_cell = environment.get_cell_from_point(&self.coordinates).unwrap();
+        feature_vec.push(self.has_food as i32 as f32);
+        feature_vec.push(self.direction[[0]]);
+        feature_vec.push(self.direction[[1]]);
+        feature_vec.push(current_cell.is_nest as i32 as f32);
+        feature_vec.push(current_cell.food_amount as f32);
+        feature_vec.push(current_cell.food_pheromone_concentration as f32);
+        feature_vec.push(current_cell.nest_pheromone_concentration as f32);
+        
         for cell in surroundings.iter() {
+            let coords_as_array = Array::from(self.coordinates.clone());
+            let direction_to_cell = get_direction_from_coords(&self.coordinates, &coords_as_array);
             feature_vec.push(cell.is_nest as i32 as f32); // Have to go through int to get to f32 from bool
             feature_vec.push(cell.food_amount as f32);
             feature_vec.push(cell.food_pheromone_concentration as f32);
             feature_vec.push(cell.nest_pheromone_concentration as f32);
+            feature_vec.push(direction_to_cell[[0]]);
+            feature_vec.push(direction_to_cell[[1]]);
         }
 
         Array::from(feature_vec)
@@ -175,5 +185,27 @@ impl Colony {
         if let Some(_) = e.update_args() {
             self.update(environment);
         }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_perceive_surroundings() {
+        let environment = Environment::new(50, 0.99);
+        let ant = Ant::new();
+        let surroundings = ant.perceive_surroundings(&environment);
+        
+        assert_eq!(surroundings.len(), 5);
+    }
+    #[test]
+    fn test_ant_get_feature_vector() {
+        let mut environment = Environment::new(50, 0.99);
+        let ant = Ant::new();
+        let feature_vector = ant._get_feature_vector(&mut environment);
+
+        assert_eq!(feature_vector.len(), 37);
     }
 }
