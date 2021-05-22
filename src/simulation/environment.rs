@@ -168,6 +168,17 @@ impl Environment {
         surroundings
     }
 
+    pub fn total_food_remaining(&self) -> f64 {
+        let mut total_food_amount = 0.0;
+        for grid_row in self.grid.iter() {
+            for cell in grid_row.iter() {
+                total_food_amount += cell.food_amount;
+            }
+        }
+
+        total_food_amount
+    }
+
     pub fn update(&mut self) {
         for grid_row in self.grid.iter_mut() {
             for cell in grid_row.iter_mut() {
