@@ -17,7 +17,8 @@ pub struct Ant {
     pub max_perception_distance: f32,
     pub field_of_view: f32,
     pub grid_location: [usize; 2],
-    pub has_food: bool
+    pub has_food: bool,
+    num_samples: usize,
 }
 
 
@@ -36,6 +37,7 @@ impl Ant {
             field_of_view: std::f32::consts::PI / 1.0,
             grid_location: [1; 2],
             has_food: false,
+            num_samples: 5,
         }
     }
 
@@ -57,7 +59,7 @@ impl Ant {
     fn perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
         // Take 10 samples of the surroundings, maybe make the sample size tunable in future
-        while surroundings.len() <= 64 {
+        while surroundings.len() <= self.num_samples {
             let random_direction = random_rotation(&self.direction, self.field_of_view);
             let random_distance = rand::random::<f32>() * self.max_perception_distance;
             let sample_point = self.coordinates + random_direction * random_distance;
