@@ -160,6 +160,9 @@ mod tests {
         let reconstructed_mlp = MLP::from_flattened_weights(4, vec![2, 2], flattened_weights);
 
         assert_eq!(mlp.layers[0].w, reconstructed_mlp.layers[0].w);
+        assert_eq!(mlp.layers[0].b, reconstructed_mlp.layers[0].b);
+        assert_eq!(mlp.layers[1].w, reconstructed_mlp.layers[1].w);
+        assert_eq!(mlp.layers[1].b, reconstructed_mlp.layers[1].b);
     }
 
     #[test]
