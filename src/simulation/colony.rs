@@ -1,4 +1,4 @@
-use ndarray::{Array, Dim};
+use ndarray::{Array, Axis, Dim};
 use piston::input::GenericEvent;
 use rand;
 
@@ -72,7 +72,7 @@ impl Ant {
         surroundings
     }
 
-    fn _get_feature_vector(&self, environment: &mut Environment) -> Array<f32, Dim<[usize; 1]>> {
+    fn get_feature_vector(&self, environment: &Environment) -> Array<f32, Dim<[usize; 2]>> {
         let surroundings = self.perceive_surroundings(environment);
         let mut feature_vec: Vec<f32> = Vec::new();
         let current_cell = environment.get_cell_from_point(&self.coordinates).unwrap();
@@ -95,10 +95,10 @@ impl Ant {
             feature_vec.push(direction_to_cell[[1]]);
         }
 
-        Array::from(feature_vec)
+        Array::from_shape_vec((1, feature_vec.len()), feature_vec).unwrap()
     }
 
-    fn update_direction(&mut self, surroundings: Vec<Cell>) {
+    fn _update_direction(&mut self, surroundings: Vec<Cell>) {
         if self.has_food {
             // If the ant is holding food, go towards the nest if it's visible, otherwise try
             // to follow the nest pheromone if any is detectable
@@ -144,7 +144,17 @@ impl Ant {
         }
     }
 
-    fn update(&mut self, environment: &mut Environment) {
+    fn update_direction(&mut self, environment: &Environment, decision_netowrk: &MLP) {
+        let feature_vector = self.get_feature_vector(environment);
+        let network_output = decision_netowrk.forward(feature_vector);
+        let flat_network_output = Array::from_iter(network_output.iter().cloned());
+        let mut direction_vector = &self.direction + flat_network_output;
+        direction_vector = random_rotation(&direction_vector, 1.5);
+
+        self.direction = normalize_array(direction_vector);
+    }
+
+    fn update(&mut self, environment: &mut Environment, decision_netowrk: &MLP) {
         self.update_position(environment);
         if environment.cell_has_food(self.grid_location) && !self.has_food {
             environment.take_food(self.grid_location);
@@ -163,8 +173,8 @@ impl Ant {
             environment.place_nest_pheromone(self.grid_location);
         }
 
-        let surroundings = self.perceive_surroundings(environment);
-        self.update_direction(surroundings);
+        // let surroundings = self.perceive_surroundings(environment);
+        self.update_direction(environment, decision_netowrk);
     }
 }
 
@@ -179,7 +189,7 @@ impl Colony {
 
     pub fn update(&mut self, environment: &mut Environment) {
         for ant in self.ants.iter_mut() {
-            ant.update(environment);
+            ant.update(environment, &self.decision_network);
         }
     }
 
@@ -207,7 +217,7 @@ mod tests {
     fn test_ant_get_feature_vector() {
         let mut environment = Environment::new(50, 0.99);
         let ant = Ant::new();
-        let feature_vector = ant._get_feature_vector(&mut environment);
+        let feature_vector = ant.get_feature_vector(&mut environment);
 
         assert_eq!(feature_vector.len(), 37);
     }

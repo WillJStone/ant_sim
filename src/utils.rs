@@ -49,3 +49,16 @@ pub fn random_rotation(array: &Array<f32, Dim<[usize; 1]>>, range: f32) -> Array
 
     return new_vec
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_random_unit_vector() {
+        let r1 = random_unit_vector();
+        let r2 = random_unit_vector();
+
+        assert_ne!(r1, r2);
+    }
+}
