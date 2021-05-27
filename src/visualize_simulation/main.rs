@@ -6,7 +6,6 @@ extern crate graphics;
 extern crate opengl_graphics;
 extern crate nalgebra as na;
 extern crate nalgebra_glm as glm;
-extern crate rayon;
 
 
 use piston::window::WindowSettings;
@@ -15,15 +14,12 @@ use piston::input::RenderEvent;
 use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
 
+extern crate lib;
 
-pub use crate::simulation::colony::Colony;
-pub use crate::simulation::environment::Environment;
-pub use crate::simulation::world_view::{WorldView, WorldViewSettings};
-pub use crate::neural_network::neural_network::MLP;
-
-mod simulation;
-mod neural_network;
-mod utils;
+use lib::simulation::colony::Colony;
+use lib::simulation::environment::Environment;
+use lib::simulation::world_view::{WorldView, WorldViewSettings};
+use lib::neural_network::mlp::MLP;
 
 
 const NUM_ANTS: usize = 200;

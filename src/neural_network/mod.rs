@@ -1,2 +1,2 @@
-pub mod neural_network;
+pub mod mlp;
 pub mod utils;

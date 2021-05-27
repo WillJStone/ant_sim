@@ -2,7 +2,7 @@ use std::f64;
 
 use crate::simulation::colony::Colony;
 use crate::simulation::environment::Environment;
-use crate::neural_network::neural_network::MLP;
+use crate::neural_network::mlp::MLP;
 
 
 pub struct Simulation {

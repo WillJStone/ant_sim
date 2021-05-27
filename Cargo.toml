@@ -4,7 +4,18 @@ version = "0.1.0"
 authors = ["asdf <asdf>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "visualize_simulation"
+path = "src/visualize_simulation/main.rs"
+
+[[bin]]
+name = "train_agents"
+path = "src/train_agents/main.rs"
+
+[lib]
+name = "lib"
+path = "src/lib.rs"
+
 
 [dependencies]
 rand = "0.8.3"
@@ -18,3 +29,5 @@ nalgebra = "0.26.2"
 nalgebra-glm = "0.12.0"
 rayon = "1.5.0"
 ndarray-rand = "0.14.0"
+nes = { git = "https://github.com/WillJStone/rust_es" }
+neural_network = { path = "/home/reeldata/Documents/neural_network"}

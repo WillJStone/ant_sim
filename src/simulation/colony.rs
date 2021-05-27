@@ -3,8 +3,8 @@ use piston::input::GenericEvent;
 use rand;
 
 use crate::simulation::environment::{Cell, Environment};
-use crate::utils::{get_direction_from_coords, random_unit_vector, random_rotation, normalize_array};
-use crate::neural_network::neural_network::MLP;
+use crate::simulation::utils::{get_direction_from_coords, random_unit_vector, random_rotation, normalize_array};
+use crate::neural_network::mlp::MLP;
 
 
 
