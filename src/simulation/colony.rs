@@ -1,4 +1,4 @@
-use ndarray::{Array, Axis, Dim};
+use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 use rand;
 

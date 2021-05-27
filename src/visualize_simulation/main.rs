@@ -1,11 +1,7 @@
-#[macro_use]
-extern crate ndarray;
 extern crate piston;
 extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
-extern crate nalgebra as na;
-extern crate nalgebra_glm as glm;
 
 
 use piston::window::WindowSettings;
