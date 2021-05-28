@@ -1,4 +1,4 @@
-use ndarray::{Array, Dim};
+use ndarray::{Array, ArrayBase, Dim, OwnedRepr};
 use piston::input::GenericEvent;
 use rand;
 
@@ -42,18 +42,23 @@ impl Ant {
     }
 
     fn update_position(&mut self, environment: &Environment) {
-        let mut new_coordinates = self.coordinates.clone() + self.direction.clone() * self.velocity;
-        let mut new_grid_cell_indices = [new_coordinates[[0]] as usize, new_coordinates[[1]] as usize];
-
-        // If this move runs up against a non-traversable cell, turn around and make another move
-        if !environment.cell_is_traversable(new_grid_cell_indices) {
-            self.direction *= -1.0;
-            new_coordinates = self.coordinates.clone() + self.direction.clone() * self.velocity;
+        let mut new_coordinates: Array<f32, Dim<[usize; 1]>>;
+        let mut new_grid_cell_indices: [usize; 2];
+        let mut i = 0;
+        while i < 10 {
+            new_coordinates = &self.coordinates + &self.direction * self.velocity;
             new_grid_cell_indices = [new_coordinates[[0]] as usize, new_coordinates[[1]] as usize];
+
+            // If the cell is traversable, go there, if not do a random rotation on the direction and try again
+            if environment.cell_is_traversable(new_grid_cell_indices) {
+                self.coordinates = new_coordinates;
+                self.grid_location = new_grid_cell_indices;
+                break;
+            } else {
+                self.direction = random_rotation(&self.direction, 2. * std::f32::consts::PI);
+            }
+            i += 1;
         }
-        
-        self.coordinates = new_coordinates;
-        self.grid_location = new_grid_cell_indices;
     }
 
     fn perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
@@ -99,6 +104,8 @@ impl Ant {
     }
 
     fn _update_direction(&mut self, surroundings: Vec<Cell>) {
+        // The old hard coded version that only kinda works. Worth keeping for the time being for reference and to
+        // compare to old behavior.
         if self.has_food {
             // If the ant is holding food, go towards the nest if it's visible, otherwise try
             // to follow the nest pheromone if any is detectable
