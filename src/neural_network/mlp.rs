@@ -1,6 +1,7 @@
 use ndarray::{Array, Dim, s};
 use ndarray_rand::RandomExt;
 use ndarray_rand::rand_distr::Uniform;
+use ndarray_npy::{read_npy, write_npy};
 
 use crate::neural_network::utils::{relu, reshape_array};
 
@@ -104,6 +105,12 @@ impl MLP {
             MLP { layers }
         }
 
+    pub fn from_file(input_dimension: usize, hidden_sizes: Vec<usize>, path: String) -> MLP {
+        let weight_array = read_npy(path).unwrap();
+
+        MLP::from_flattened_weights(input_dimension, hidden_sizes, weight_array)
+    }
+
     pub fn flatten_weights(&self) -> Array<f32, Dim<[usize; 1]>> {
         let mut flattened_weights: Vec<f32> = Vec::new();
         for layer in self.layers.iter() {
@@ -117,6 +124,11 @@ impl MLP {
         }
 
         Array::from(flattened_weights)
+    }
+
+    pub fn save_weights(&self, path: String) {
+        let weights = self.flatten_weights();
+        write_npy(path, &weights).unwrap();
     }
 
     pub fn forward(&self, input: Array<f32, Dim<[usize; 2]>>) -> Array<f32, Dim<[usize; 2]>> {
