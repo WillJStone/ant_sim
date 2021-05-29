@@ -165,12 +165,13 @@ impl Ant {
         self.update_position(environment);
         if environment.cell_has_food(self.grid_location) && !self.has_food {
             environment.take_food(self.grid_location);
-            self.direction *= -1.0;
+            //self.direction *= -1.0;
             self.has_food = true;
         }
 
         if environment.cell_is_nest(self.grid_location) && self.has_food {
-            self.direction *= -1.0;
+            //self.direction *= -1.0;
+            environment.food_returned_to_nest += 0.1;
             self.has_food = false;
         }
 
@@ -180,7 +181,6 @@ impl Ant {
             environment.place_nest_pheromone(self.grid_location);
         }
 
-        // let surroundings = self.perceive_surroundings(environment);
         self.update_direction(environment, decision_netowrk);
     }
 }
@@ -201,7 +201,6 @@ impl Colony {
     }
 
     pub fn update_piston<E: GenericEvent>(&mut self, environment: &mut Environment, e: &E) {
-        // Move every ant randomly for now
         if let Some(_) = e.update_args() {
             self.update(environment);
         }

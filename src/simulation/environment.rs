@@ -17,6 +17,7 @@ pub struct Environment {
     pub diffusion_rate: f64,
     pub size: usize,
     pub grid: Vec<Vec<Cell>>,
+    pub food_returned_to_nest: f64,
 }
 
 
@@ -69,6 +70,7 @@ impl Environment {
             diffusion_rate: diffusion_rate,
             size: arena_size,
             grid: grid,
+            food_returned_to_nest: 0.
         };
         environment.pad_edges();
         environment.set_nest_area();

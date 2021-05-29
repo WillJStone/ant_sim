@@ -13,7 +13,8 @@ pub struct Simulation {
 
 pub struct SimulationResult {
     pub num_iters: usize,
-    pub total_food_amount: f64,
+    pub food_returned_to_nest: f64,
+    pub food_remaining: f64,
 }
 
 
@@ -30,22 +31,27 @@ impl Simulation {
 
     pub fn run(&mut self, num_steps: usize) -> SimulationResult {
         let mut i = 0;
-        while i < num_steps && self.environment.total_food_remaining() > 0.0 {
+        while i < num_steps {
             self.environment.update();
             self.colony.update(&mut self.environment);
             i += 1;
         };
 
-        SimulationResult::new(i, self.environment.total_food_remaining())
+        SimulationResult::new(
+            i, 
+            self.environment.food_returned_to_nest,
+            self.environment.total_food_remaining()
+        )
     }
 }
 
 
 impl SimulationResult {
-    pub fn new(num_iters: usize, total_food_amount: f64) -> SimulationResult {
+    pub fn new(num_iters: usize, food_returned_to_nest: f64, food_remaining: f64) -> SimulationResult {
         SimulationResult {
             num_iters, 
-            total_food_amount,
+            food_returned_to_nest,
+            food_remaining,
         }
     }
 }
@@ -66,7 +72,7 @@ mod tests {
         let decision_network: MLP = MLP::new(37, vec![16, 2]);
         let mut simulation = Simulation::new(50, 0.99, 100, decision_network);
         let sim_result = simulation.run(10);
-        let fake_sim_result = SimulationResult::new(10, 25.0);
+        let fake_sim_result = SimulationResult::new(10, 0., 25.);
 
         assert_eq!(sim_result.num_iters, fake_sim_result.num_iters);
     }
