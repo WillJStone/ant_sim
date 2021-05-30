@@ -74,7 +74,7 @@ mod tests {
     fn test_simulation_run() {
         let decision_network: MLP = MLP::new(37, vec![16, 2]);
         let mut simulation = Simulation::new(50, 0.99, 100, decision_network);
-        let sim_result = simulation.run(10);
+        let _sim_result = simulation.run(10);
         // let fake_sim_result = SimulationResult::new(10, 0., 25.);
 
         // assert_eq!(sim_result.num_iters, fake_sim_result.num_iters);

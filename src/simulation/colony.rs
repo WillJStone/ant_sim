@@ -1,5 +1,3 @@
-use std::env;
-
 use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 use rand;

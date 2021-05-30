@@ -1,5 +1,3 @@
-use core::num;
-
 use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 
