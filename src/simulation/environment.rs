@@ -1,3 +1,5 @@
+use core::num;
+
 use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 
@@ -10,6 +12,7 @@ pub struct Cell {
     pub food_amount: f64,
     pub is_nest: bool,
     pub is_traversable: bool,
+    pub visited: bool,
 }
 
 
@@ -30,6 +33,7 @@ impl Cell {
             food_amount: 0.0,
             is_nest: false,
             is_traversable: true,
+            visited: false,
         }
     }
 
@@ -179,6 +183,17 @@ impl Environment {
         }
 
         total_food_amount
+    }
+
+    pub fn num_cells_visited(&self) -> i32 {
+        let mut num_cells = 0;
+        for grid_row in self.grid.iter() {
+            for cell in grid_row.iter() {
+                num_cells += cell.visited as i32;
+            }
+        }
+
+        num_cells
     }
 
     pub fn update(&mut self) {
