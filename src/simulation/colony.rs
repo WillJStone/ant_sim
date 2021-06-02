@@ -197,10 +197,7 @@ impl Colony {
     pub fn update(&mut self, environment: &mut Environment) {
         for ant in self.ants.iter_mut() {
             ant.update(environment, &self.decision_network);
-            let mut cell = environment.get_cell_from_point(&ant.coordinates).unwrap();
-            if !cell.visited {
-                cell.visited = true;
-            }
+            environment.set_cell_as_visited(ant.grid_location);
         }
     }
 

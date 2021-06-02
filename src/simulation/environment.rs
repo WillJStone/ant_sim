@@ -194,6 +194,10 @@ impl Environment {
         num_cells
     }
 
+    pub fn set_cell_as_visited(&mut self, index: [usize; 2]) {
+        self.grid[index[0]][index[1]].visited = true;
+    }
+
     pub fn update(&mut self) {
         for grid_row in self.grid.iter_mut() {
             for cell in grid_row.iter_mut() {
