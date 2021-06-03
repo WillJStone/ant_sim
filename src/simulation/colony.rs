@@ -156,7 +156,7 @@ impl Ant {
         let network_output = decision_netowrk.forward(feature_vector);
         let flat_network_output = Array::from_iter(network_output.iter().cloned());
         let mut direction_vector = &self.direction + flat_network_output;
-        direction_vector = random_rotation(&direction_vector, 1.5);
+        direction_vector = random_rotation(&direction_vector, 0.5);
 
         self.direction = normalize_array(direction_vector);
     }

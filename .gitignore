@@ -1,1 +1,3 @@
 /target
+src/train_agents/models
+*.npy
