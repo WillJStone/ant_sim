@@ -11,11 +11,11 @@ use lib::simulation::simulation::Simulation;
 use lib::neural_network::mlp::MLP;
 
 
-const NUM_ANTS: usize = 100;
-const ARENA_SIZE: usize = 50;
+const NUM_ANTS: usize = 50;
+const ARENA_SIZE: usize = 25;
 const DIFFUSION_RATE: f64 = 0.99;
 //const NUM_PERCEPTION_SAMPLES: usize = 10;
-const NUM_STEPS_PER_SIM: usize = 1000;
+const NUM_STEPS_PER_SIM: usize = 500;
 
 #[derive(Clone)]
 struct SimulationWrapper {
@@ -43,14 +43,14 @@ impl Objective for SimulationWrapper {
 
 fn main() {
     let mu = random_gaussian_vector(37*16*2, 0., 0.1);
-    let sigma = Array::ones(37*16*2);
+    let sigma = Array::ones(37*16*2) / 10.;
     let callable = SimulationWrapper {};
-    let mut nes = NES::new(callable.clone(), mu, sigma, 64, 0.1, 0.1, true);
+    let mut nes = NES::new(callable.clone(), mu, sigma, 128, 0.01, 0.01, true);
     
-    for i in 0..50 {
+    for i in 0..500 {
         nes.step();
         println!("Step {} complete", i);
     }
 
-    write_npy("trial_3.npy", &nes.mu).unwrap();
+    write_npy("trial_4.npy", &nes.mu).unwrap();
 }

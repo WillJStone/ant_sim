@@ -110,7 +110,7 @@ impl Environment {
         if self.grid[index[0]][index[1]].nest_pheromone_concentration > 0.9 {
             self.grid[index[0]][index[1]].nest_pheromone_concentration = 1.0;
         } else {
-            self.grid[index[0]][index[1]].nest_pheromone_concentration += 0.05;
+            self.grid[index[0]][index[1]].nest_pheromone_concentration += 0.01;
         }
     }
 
@@ -118,7 +118,7 @@ impl Environment {
         if self.grid[index[0]][index[1]].food_pheromone_concentration > 0.9 {
             self.grid[index[0]][index[1]].food_pheromone_concentration = 1.0;
         } else {
-            self.grid[index[0]][index[1]].food_pheromone_concentration += 0.1;
+            self.grid[index[0]][index[1]].food_pheromone_concentration += 0.01;
         }
     }
 

@@ -19,8 +19,8 @@ use lib::simulation::world_view::{WorldView, WorldViewSettings};
 use lib::neural_network::mlp::MLP;
 
 
-const NUM_ANTS: usize = 100;
-const ARENA_SIZE: usize = 50;
+const NUM_ANTS: usize = 50;
+const ARENA_SIZE: usize = 25;
 const DIFFUSION_RATE: f64 = 0.99;
 const PIXEL_SIZE: usize = 4;
 const RESOLUTION: usize = PIXEL_SIZE * ARENA_SIZE;
