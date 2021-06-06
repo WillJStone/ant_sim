@@ -61,7 +61,7 @@ impl Ant {
         }
     }
 
-    fn perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
+    fn _perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
         // Take 10 samples of the surroundings, maybe make the sample size tunable in future
         while surroundings.len() < self.num_samples {
@@ -77,22 +77,31 @@ impl Ant {
         surroundings
     }
 
+    fn perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
+        let mut surroundings: Vec<Cell> = Vec::new();
+        for i in (self.grid_location[0] - 1)..(self.grid_location[0] + 2) {
+            for j in (self.grid_location[1] -1)..(self.grid_location[1] + 2) {
+                surroundings.push(environment.grid[i][j].clone());
+            }
+        }
+
+        surroundings
+    }
+
     fn get_feature_vector(&self, environment: &Environment) -> Array<f32, Dim<[usize; 2]>> {
         let surroundings = self.perceive_surroundings(environment);
         let mut feature_vec: Vec<f32> = Vec::new();
-        let current_cell = environment.get_cell_from_point(&self.coordinates).unwrap();
+        // let current_cell = environment.get_cell_from_point(&self.coordinates).unwrap();
+        // First 3 channels are the ant's personal info
         feature_vec.push(self.has_food as i32 as f32);
         feature_vec.push(self.direction[[0]]);
         feature_vec.push(self.direction[[1]]);
-        feature_vec.push(current_cell.is_nest as i32 as f32);
-        feature_vec.push(current_cell.food_amount as f32);
-        feature_vec.push(current_cell.food_pheromone_concentration as f32);
-        feature_vec.push(current_cell.nest_pheromone_concentration as f32);
         
         for cell in surroundings.iter() {
             let coords_as_array = Array::from(self.coordinates.clone());
             let direction_to_cell = get_direction_from_coords(&self.coordinates, &coords_as_array);
             feature_vec.push(cell.is_nest as i32 as f32); // Have to go through int to get to f32 from bool
+            feature_vec.push(cell.is_traversable as i32 as f32);
             feature_vec.push(cell.food_amount as f32);
             feature_vec.push(cell.food_pheromone_concentration as f32);
             feature_vec.push(cell.nest_pheromone_concentration as f32);
