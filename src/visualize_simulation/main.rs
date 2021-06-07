@@ -43,7 +43,7 @@ fn main() {
 
     //let weights = read_npy("/home/reeldata/Documents/ant_sim/src/visualize_simulation/trial_3.npy").unwrap();
 
-    let decision_network: MLP = MLP::new(66, vec![16, 2]);
+    let decision_network: MLP = MLP::new(178, vec![16, 2]);
     let mut colony = Colony::new(NUM_ANTS, decision_network);
     let mut environment = Environment::new(ARENA_SIZE, DIFFUSION_RATE);
     let world_view = WorldView::new(WorldViewSettings::new());

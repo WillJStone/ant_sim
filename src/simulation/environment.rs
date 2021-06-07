@@ -23,7 +23,7 @@ pub struct Environment {
 
 
 impl Cell {
-    fn new(coordinates: [usize; 2]) -> Cell {
+    pub fn new(coordinates: [usize; 2]) -> Cell {
         Cell {
             coordinates: coordinates,
             nest_pheromone_concentration: 0.0,

@@ -61,7 +61,7 @@ impl Ant {
         }
     }
 
-    fn _perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
+    fn perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
         // Take 10 samples of the surroundings, maybe make the sample size tunable in future
         while surroundings.len() < self.num_samples {
@@ -77,11 +77,17 @@ impl Ant {
         surroundings
     }
 
-    fn perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
+    fn _perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
-        for i in (self.grid_location[0] - 1)..(self.grid_location[0] + 2) {
-            for j in (self.grid_location[1] -1)..(self.grid_location[1] + 2) {
-                surroundings.push(environment.grid[i][j].clone());
+        for i in (self.grid_location[0] as i32 - 2)..(self.grid_location[0] + 3) as i32 {
+            for j in (self.grid_location[1] as i32)..((self.grid_location[1] + 3) as i32) {
+                let cell: Cell;
+                if i < 0 || i >= environment.size as i32|| j < 0 || j >= environment.size as i32 {
+                    cell = Cell::new([0; 2]);
+                } else {
+                    cell = environment.grid[i as usize][j as usize].clone();
+                }
+                surroundings.push(cell);
             }
         }
 
@@ -165,7 +171,7 @@ impl Ant {
         let network_output = decision_netowrk.forward(feature_vector);
         let flat_network_output = Array::from_iter(network_output.iter().cloned());
         let mut direction_vector = &self.direction + flat_network_output;
-        direction_vector = random_rotation(&direction_vector, 0.5);
+        direction_vector = random_rotation(&direction_vector, 0.005);
 
         self.direction = normalize_array(direction_vector);
     }
