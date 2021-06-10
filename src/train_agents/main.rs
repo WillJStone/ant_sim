@@ -3,6 +3,8 @@ extern crate lib;
 extern crate openblas_src;
 
 use ndarray::{Array, Dim};
+use ndarray_rand::RandomExt;
+use ndarray_rand::rand_distr::Uniform;
 use ndarray_npy::write_npy;
 
 use rust_es::nes::NES;
@@ -50,12 +52,13 @@ impl Objective for SimulationWrapper {
 
 
 fn main() {
+    let distribution = Uniform::new(-0.01, 0.01);
     let hidden_sizes = vec![16, 2];
     let num_parameters = INPUT_DIMENSION * hidden_sizes[0] * hidden_sizes[1];
-    let mu = random_gaussian_vector(num_parameters, 0., 1.);
+    let mu = Array::random(num_parameters, distribution);
     let sigma = Array::ones(num_parameters);
     let callable = SimulationWrapper {};
-    let mut nes = NES::new(callable.clone(), mu, sigma, 32, 0.001, 0.001, true);
+    let mut nes = NES::new(callable.clone(), mu, sigma, 8, 0.01, 0.001, true);
     
     for i in 0..500 {
         nes.step();
