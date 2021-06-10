@@ -1,5 +1,6 @@
 extern crate rust_es;
 extern crate lib;
+extern crate openblas_src;
 
 use ndarray::{Array, Dim};
 use ndarray_npy::write_npy;
@@ -11,8 +12,8 @@ use lib::simulation::simulation::Simulation;
 use lib::neural_network::mlp::MLP;
 
 
-const NUM_ANTS: usize = 1;
-const ARENA_SIZE: usize = 16;
+const NUM_ANTS: usize = 10;
+const ARENA_SIZE: usize = 25;
 const DIFFUSION_RATE: f64 = 0.995;
 //const NUM_PERCEPTION_SAMPLES: usize = 10;
 const NUM_STEPS_PER_SIM: usize = 250;

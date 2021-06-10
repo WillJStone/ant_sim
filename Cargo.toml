@@ -23,7 +23,9 @@ piston = "0.53.0"
 piston2d-graphics = "0.40.0"
 piston2d-opengl_graphics = "0.78.0"
 pistoncore-glutin_window = "0.69.0"
-ndarray-rand = "0.14.0"
+ndarray = { version = "0.15.0", features = ["blas"] }
+blas-src = { version = "0.8", features = ["openblas"] }
+openblas-src = { version = "0.10", features = ["cblas", "system"] }
+ndarray-rand = { version = "0.14.0" }
 ndarray-npy = "0.8.0"
-ndarray = "0.15.1"
 rust_es = { path = "../rust_es" }
