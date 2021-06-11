@@ -14,11 +14,11 @@ use lib::simulation::simulation::Simulation;
 use lib::neural_network::mlp::MLP;
 
 
-const NUM_ANTS: usize = 10;
-const ARENA_SIZE: usize = 25;
-const DIFFUSION_RATE: f64 = 0.995;
+const NUM_ANTS: usize = 20;
+const ARENA_SIZE: usize = 75;
+const DIFFUSION_RATE: f64 = 0.999;
 //const NUM_PERCEPTION_SAMPLES: usize = 10;
-const NUM_STEPS_PER_SIM: usize = 250;
+const NUM_STEPS_PER_SIM: usize = 500;
 const INPUT_DIMENSION: usize = 38;
 
 #[derive(Clone)]
@@ -53,12 +53,12 @@ impl Objective for SimulationWrapper {
 
 fn main() {
     let distribution = Uniform::new(-0.01, 0.01);
-    let hidden_sizes = vec![16, 2];
-    let num_parameters = INPUT_DIMENSION * hidden_sizes[0] * hidden_sizes[1];
+    let hidden_sizes = vec![16, 16, 2];
+    let num_parameters = INPUT_DIMENSION * hidden_sizes[0] * hidden_sizes[1] * hidden_sizes[2];
     let mu = Array::random(num_parameters, distribution);
-    let sigma = Array::ones(num_parameters);
+    let sigma = Array::ones(num_parameters) / 10.;
     let callable = SimulationWrapper {};
-    let mut nes = NES::new(callable.clone(), mu, sigma, 8, 0.01, 0.001, true);
+    let mut nes = NES::new(callable.clone(), mu, sigma, 64, 0.01, 0.001, true);
     
     for i in 0..500 {
         nes.step();

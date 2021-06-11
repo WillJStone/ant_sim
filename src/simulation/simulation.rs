@@ -65,14 +65,14 @@ mod tests {
     use super::*;
     #[test]
     fn test_simulation_new() {
-        let decision_network: MLP = MLP::new(37, vec![16, 2]);
+        let decision_network: MLP = MLP::new(37, vec![16, 1]);
         let simulation = Simulation::new(50, 0.99, 100, decision_network);
         assert_eq!(simulation.environment.size, 50);
     }
 
     #[test]
     fn test_simulation_run() {
-        let decision_network: MLP = MLP::new(37, vec![16, 2]);
+        let decision_network: MLP = MLP::new(38, vec![16, 1]);
         let mut simulation = Simulation::new(50, 0.99, 100, decision_network);
         let _sim_result = simulation.run(10);
         // let fake_sim_result = SimulationResult::new(10, 0., 25.);

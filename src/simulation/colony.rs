@@ -3,7 +3,7 @@ use piston::input::GenericEvent;
 use rand;
 
 use crate::simulation::environment::{Cell, Environment};
-use crate::simulation::utils::{get_direction_from_coords, random_unit_vector, random_rotation, normalize_array};
+use crate::simulation::utils::{get_direction_from_coords, random_unit_vector, random_rotation, normalize_array, rotate_array2};
 use crate::neural_network::mlp::MLP;
 
 
@@ -170,10 +170,10 @@ impl Ant {
         let feature_vector = self.get_feature_vector(environment);
         let network_output = decision_netowrk.forward(feature_vector);
         let flat_network_output = Array::from_iter(network_output.iter().cloned());
-        let mut direction_vector = &self.direction + flat_network_output;
-        direction_vector = random_rotation(&direction_vector, 0.005);
+        self.direction = rotate_array2(&self.direction, flat_network_output[0]);
+        // direction_vector = random_rotation(&direction_vector, 0.005);
 
-        self.direction = normalize_array(direction_vector);
+        //self.direction = normalize_array(direction_vector);
     }
 
     fn update(&mut self, environment: &mut Environment, decision_netowrk: &MLP) {
@@ -241,6 +241,6 @@ mod tests {
         let ant = Ant::new();
         let feature_vector = ant.get_feature_vector(&mut environment);
 
-        assert_eq!(feature_vector.len(), 37);
+        assert_eq!(feature_vector.len(), 38);
     }
 }

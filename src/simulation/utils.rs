@@ -19,7 +19,7 @@ pub fn random_unit_vector() -> Array<f32, Dim<[usize; 1]>> {
 }
 
 
-fn rotate_array2(array: &Array<f32, Dim<[usize; 1]>>, angle: f32) -> Array<f32, Dim<[usize; 1]>> {
+pub fn rotate_array2(array: &Array<f32, Dim<[usize; 1]>>, angle: f32) -> Array<f32, Dim<[usize; 1]>> {
     let x = array[[0]] * angle.cos() - array[[1]] * angle.sin();
     let y = array[[0]] * angle.sin() + array[[1]] * angle.cos();
 
