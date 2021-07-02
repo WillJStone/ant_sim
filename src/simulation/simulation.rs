@@ -1,12 +1,12 @@
 use std::f64;
 
 use crate::simulation::colony::Colony;
-use crate::simulation::environment::Environment;
+use crate::simulation::arena::Arena;
 use crate::neural_network::mlp::MLP;
 
 
 pub struct Simulation {
-    pub environment: Environment,
+    pub arena: Arena,
     pub colony: Colony,
 }
 
@@ -21,11 +21,11 @@ pub struct SimulationResult {
 
 impl Simulation {
     pub fn new(arena_size: usize, diffusion_rate: f64, num_ants: usize, decision_network: MLP) -> Simulation {
-        let environment = Environment::new(arena_size, diffusion_rate);
+        let arena = Arena::new(arena_size, diffusion_rate);
         let colony = Colony::new(num_ants, decision_network);
 
         Simulation {
-            environment,
+            arena,
             colony,
         }
     }
@@ -33,16 +33,16 @@ impl Simulation {
     pub fn run(&mut self, num_steps: usize) -> SimulationResult {
         let mut i = 0;
         while i < num_steps {
-            self.environment.update();
-            self.colony.update(&mut self.environment);
+            self.arena.update();
+            self.colony.update(&mut self.arena);
             i += 1;
         };
 
         SimulationResult::new(
             i, 
-            self.environment.food_returned_to_nest,
-            self.environment.total_food_remaining(),
-            self.environment.num_cells_visited() as f64/ self.environment.size.pow(2) as f64 
+            self.arena.food_returned_to_nest,
+            self.arena.total_food_remaining(),
+            self.arena.num_cells_visited() as f64/ self.arena.size.pow(2) as f64 
         )
     }
 }
@@ -67,7 +67,7 @@ mod tests {
     fn test_simulation_new() {
         let decision_network: MLP = MLP::new(37, vec![16, 1]);
         let simulation = Simulation::new(50, 0.99, 100, decision_network);
-        assert_eq!(simulation.environment.size, 50);
+        assert_eq!(simulation.arena.size, 50);
     }
 
     #[test]

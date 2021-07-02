@@ -16,7 +16,7 @@ use ndarray_npy::read_npy;
 extern crate lib;
 
 use lib::simulation::colony::Colony;
-use lib::simulation::environment::Environment;
+use lib::simulation::arena::Arena;
 use lib::simulation::world_view::{WorldView, WorldViewSettings};
 use lib::neural_network::mlp::MLP;
 
@@ -47,7 +47,7 @@ fn main() {
 
     let decision_network: MLP = MLP::new(38, vec![16, 1]);
     let mut colony = Colony::new(NUM_ANTS, decision_network);
-    let mut environment = Environment::new(ARENA_SIZE, DIFFUSION_RATE);
+    let mut environment = Arena::new(ARENA_SIZE, DIFFUSION_RATE);
     let world_view = WorldView::new(WorldViewSettings::new());
 
     while let Some(e) = events.next(&mut window) {

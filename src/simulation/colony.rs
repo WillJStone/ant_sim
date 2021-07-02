@@ -2,7 +2,7 @@ use ndarray::{Array, Dim};
 use piston::input::GenericEvent;
 use rand;
 
-use crate::simulation::environment::{Cell, Environment};
+use crate::simulation::arena::{Cell, Arena};
 use crate::simulation::utils::{get_direction_from_coords, random_unit_vector, random_rotation, normalize_array, rotate_array2};
 use crate::neural_network::mlp::MLP;
 
@@ -41,7 +41,7 @@ impl Ant {
         }
     }
 
-    fn update_position(&mut self, environment: &Environment) {
+    fn update_position(&mut self, environment: &Arena) {
         let mut new_coordinates: Array<f32, Dim<[usize; 1]>>;
         let mut new_grid_cell_indices: [usize; 2];
         let mut i = 0;
@@ -61,7 +61,7 @@ impl Ant {
         }
     }
 
-    fn perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
+    fn perceive_surroundings(&self, environment: &Arena) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
         // Take 10 samples of the surroundings, maybe make the sample size tunable in future
         while surroundings.len() < self.num_samples {
@@ -77,7 +77,7 @@ impl Ant {
         surroundings
     }
 
-    fn _perceive_surroundings(&self, environment: &Environment) -> Vec<Cell> {
+    fn _perceive_surroundings(&self, environment: &Arena) -> Vec<Cell> {
         let mut surroundings: Vec<Cell> = Vec::new();
         for i in (self.grid_location[0] as i32 - 2)..(self.grid_location[0] + 3) as i32 {
             for j in (self.grid_location[1] as i32)..((self.grid_location[1] + 3) as i32) {
@@ -94,7 +94,7 @@ impl Ant {
         surroundings
     }
 
-    fn get_feature_vector(&self, environment: &Environment) -> Array<f32, Dim<[usize; 2]>> {
+    fn get_feature_vector(&self, environment: &Arena) -> Array<f32, Dim<[usize; 2]>> {
         let surroundings = self.perceive_surroundings(environment);
         let mut feature_vec: Vec<f32> = Vec::new();
         // let current_cell = environment.get_cell_from_point(&self.coordinates).unwrap();
@@ -166,7 +166,7 @@ impl Ant {
         }
     }
 
-    fn update_direction(&mut self, environment: &Environment, decision_netowrk: &MLP) {
+    fn update_direction(&mut self, environment: &Arena, decision_netowrk: &MLP) {
         let feature_vector = self.get_feature_vector(environment);
         let network_output = decision_netowrk.forward(feature_vector);
         let flat_network_output = Array::from_iter(network_output.iter().cloned());
@@ -176,7 +176,7 @@ impl Ant {
         //self.direction = normalize_array(direction_vector);
     }
 
-    fn update(&mut self, environment: &mut Environment, decision_netowrk: &MLP) {
+    fn update(&mut self, environment: &mut Arena, decision_netowrk: &MLP) {
         self.update_position(environment);
         if environment.cell_has_food(self.grid_location) && !self.has_food {
             environment.take_food(self.grid_location);
@@ -209,14 +209,14 @@ impl Colony {
         }
     }
 
-    pub fn update(&mut self, environment: &mut Environment) {
+    pub fn update(&mut self, environment: &mut Arena) {
         for ant in self.ants.iter_mut() {
             ant.update(environment, &self.decision_network);
             environment.set_cell_as_visited(ant.grid_location);
         }
     }
 
-    pub fn update_piston<E: GenericEvent>(&mut self, environment: &mut Environment, e: &E) {
+    pub fn update_piston<E: GenericEvent>(&mut self, environment: &mut Arena, e: &E) {
         if let Some(_) = e.update_args() {
             self.update(environment);
         }
@@ -229,7 +229,7 @@ mod tests {
     use super::*;
     #[test]
     fn test_perceive_surroundings() {
-        let environment = Environment::new(50, 0.99);
+        let environment = Arena::new(50, 0.99);
         let ant = Ant::new();
         let surroundings = ant.perceive_surroundings(&environment);
         
@@ -237,7 +237,7 @@ mod tests {
     }
     #[test]
     fn test_ant_get_feature_vector() {
-        let mut environment = Environment::new(50, 0.99);
+        let mut environment = Arena::new(50, 0.99);
         let ant = Ant::new();
         let feature_vector = ant.get_feature_vector(&mut environment);
 

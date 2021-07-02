@@ -1,7 +1,7 @@
 use graphics::types::Color;
 use graphics::{Context, Graphics};
 
-use crate::simulation::environment::Environment;
+use crate::simulation::arena::Arena;
 // use crate::simulation::colony::Colony;
 
 
@@ -33,7 +33,7 @@ impl WorldView {
         }
     }
 
-    fn draw_environment<G: Graphics>(&self, environment: &Environment, c: &Context, g: &mut G) {
+    fn draw_environment<G: Graphics>(&self, environment: &Arena, c: &Context, g: &mut G) {
         use graphics::{Rectangle, rectangle};
         let nest_cell = Rectangle::new([0.0, 0.0, 1.0, 0.5]);
 
@@ -75,7 +75,7 @@ impl WorldView {
     //     }
     // }
 
-    pub fn draw<G: Graphics>(&self, environment: &Environment, c: &Context, g: &mut G) {
+    pub fn draw<G: Graphics>(&self, environment: &Arena, c: &Context, g: &mut G) {
         self.draw_environment(environment, c, g);
         // self.draw_colony(colony, c, g);
 

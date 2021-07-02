@@ -14,7 +14,7 @@ pub struct Cell {
 }
 
 
-pub struct Environment {
+pub struct Arena {
     pub diffusion_rate: f64,
     pub size: usize,
     pub grid: Vec<Vec<Cell>>,
@@ -60,15 +60,15 @@ impl Cell {
 }
 
 
-impl Environment {
-    pub fn new(arena_size: usize, diffusion_rate: f64) -> Environment {
+impl Arena {
+    pub fn new(arena_size: usize, diffusion_rate: f64) -> Arena {
         let mut grid = vec![vec![Cell::new([0, 0]); arena_size]; arena_size];
         for i in 0..arena_size {
             for j in 0..arena_size {
                 grid[i][j].coordinates = [i, j];
             }
         }
-        let mut environment = Environment {
+        let mut environment = Arena {
             diffusion_rate: diffusion_rate,
             size: arena_size,
             grid: grid,
@@ -218,7 +218,7 @@ mod tests {
     use super::*;
     #[test]
     fn new_environment() {
-        let environment = Environment::new(100, 0.9);
+        let environment = Arena::new(100, 0.9);
         assert_eq!(environment.grid[1][1].coordinates, [1, 1]);
     }
 }
