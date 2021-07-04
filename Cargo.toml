@@ -8,10 +8,6 @@ edition = "2018"
 name = "visualize_simulation"
 path = "src/visualize_simulation/main.rs"
 
-[[bin]]
-name = "train_agents"
-path = "src/train_agents/main.rs"
-
 [lib]
 name = "lib"
 path = "src/lib.rs"

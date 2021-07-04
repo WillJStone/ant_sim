@@ -11,13 +11,11 @@ use piston::input::RenderEvent;
 use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
 use ndarray::Array;
-use ndarray_npy::read_npy;
 
 extern crate lib;
 
 use lib::simulation::environment::Environment;
 use lib::simulation::world_view::{WorldView, WorldViewSettings};
-use lib::neural_network::mlp::MLP;
 
 
 const NUM_ANTS: usize = 50;
@@ -41,10 +39,7 @@ fn main() {
 
     let mut events = Events::new(event_settings);
     let mut gl = GlGraphics::new(opengl);
-
-    //let weights = read_npy("/home/reeldata/Documents/ant_sim/src/visualize_simulation/trial_3.npy").unwrap();
-
-    let decision_network: MLP = MLP::new(38, vec![16, 1]);
+    
     let mut environment = Environment::new(ARENA_SIZE, DIFFUSION_RATE, NUM_ANTS);
     let world_view = WorldView::new(WorldViewSettings::new());
 
