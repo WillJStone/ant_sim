@@ -78,6 +78,7 @@ impl Ant {
     }
 
     fn _perceive_surroundings(&self, environment: &Arena) -> Vec<Cell> {
+        // Really dumb implementation of just looking at the local neighborhood of cells
         let mut surroundings: Vec<Cell> = Vec::new();
         for i in (self.grid_location[0] as i32 - 2)..(self.grid_location[0] + 3) as i32 {
             for j in (self.grid_location[1] as i32)..((self.grid_location[1] + 3) as i32) {
@@ -97,7 +98,7 @@ impl Ant {
     fn get_feature_vector(&self, environment: &Arena) -> Array<f32, Dim<[usize; 2]>> {
         let surroundings = self.perceive_surroundings(environment);
         let mut feature_vec: Vec<f32> = Vec::new();
-        // let current_cell = environment.get_cell_from_point(&self.coordinates).unwrap();
+
         // First 3 channels are the ant's personal info
         feature_vec.push(self.has_food as i32 as f32);
         feature_vec.push(self.direction[[0]]);
