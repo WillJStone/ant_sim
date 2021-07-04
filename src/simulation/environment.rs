@@ -1,7 +1,7 @@
 use ndarray::{Array, Dim};
 
 use crate::simulation::arena::Arena;
-use crate::simulation::colony::Ant;
+use crate::simulation::ant::Ant;
 
 pub struct Environment {
     arena: Arena,

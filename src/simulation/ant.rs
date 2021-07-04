@@ -1,10 +1,8 @@
 use ndarray::{Array, Dim};
-use piston::input::GenericEvent;
 use rand;
 
 use crate::simulation::arena::{Cell, Arena};
-use crate::simulation::utils::{get_direction_from_coords, random_unit_vector, random_rotation, normalize_array, rotate_array2};
-use crate::neural_network::mlp::MLP;
+use crate::simulation::utils::{get_direction_from_coords, random_unit_vector, random_rotation, rotate_array2};
 
 
 
@@ -18,12 +16,6 @@ pub struct Ant {
     pub grid_location: [usize; 2],
     pub has_food: bool,
     num_samples: usize,
-}
-
-
-pub struct Colony {
-    pub ants: Vec<Ant>,
-    decision_network: MLP,
 }
 
 
@@ -119,87 +111,6 @@ impl Ant {
         Array::from_shape_vec((1, feature_vec.len()), feature_vec).unwrap()
     }
 
-    fn _update_direction(&mut self, surroundings: Vec<Cell>) {
-        // The old hard coded version that only kinda works. Worth keeping for the time being for reference and to
-        // compare to old behavior.
-        if self.has_food {
-            // If the ant is holding food, go towards the nest if it's visible, otherwise try
-            // to follow the nest pheromone if any is detectable
-            if surroundings.iter().any(|c| c.is_nest) {
-                let nest_cell = surroundings.iter().find(|c| c.is_nest).unwrap();
-                let nest_cell_point = nest_cell.get_continuous_location();
-                let point_difference = nest_cell_point - self.coordinates.clone();
-                self.direction = normalize_array(point_difference);
-
-            } else if surroundings.iter().any(|c| c.nest_pheromone_concentration > 0.0) {
-                let max_pheromone_cell = surroundings.iter().max_by(
-                    |c1, c2| c1.nest_pheromone_concentration.partial_cmp(&c2.nest_pheromone_concentration).unwrap()
-                ).unwrap();
-                let max_cell_point = max_pheromone_cell.get_continuous_location();
-                let point_difference = max_cell_point - self.coordinates.clone();
-                self.direction = normalize_array(point_difference);
-
-            } else {
-                self.direction = random_rotation(&self.direction, 0.5);
-            }
-        } else {
-            // If the ant does not have food, go towards food directly if it's visible, otherwise
-            // try to follow the food pheromone if any is detectable
-            if surroundings.iter().any(|c| c.food_amount > 0.0) {
-                let food_cell = surroundings.iter().find(|c| c.food_amount > 0.0).unwrap();
-                let food_cell_point = food_cell.get_continuous_location();
-                let point_difference = food_cell_point - self.coordinates.clone();
-                self.direction = normalize_array(point_difference);
-
-            } else if surroundings.iter().any(|c| c.food_pheromone_concentration > 0.0) {
-                let max_pheromone_cell = surroundings
-                    .iter()
-                    .filter(|c| c.food_pheromone_concentration > 0.0)
-                    .max_by(
-                        |c1, c2| c1.food_pheromone_concentration.partial_cmp(&c2.food_pheromone_concentration).unwrap()
-                    ).unwrap();
-                let max_cell_point = max_pheromone_cell.get_continuous_location();
-                let point_difference = max_cell_point - self.coordinates.clone();
-                self.direction = normalize_array(point_difference);
-            } else {
-                self.direction = random_rotation(&self.direction, 0.5);
-            }
-        }
-    }
-
-    fn update_direction(&mut self, environment: &Arena, decision_netowrk: &MLP) {
-        let feature_vector = self.get_feature_vector(environment);
-        let network_output = decision_netowrk.forward(feature_vector);
-        let flat_network_output = Array::from_iter(network_output.iter().cloned());
-        self.direction = rotate_array2(&self.direction, flat_network_output[0]);
-        // direction_vector = random_rotation(&direction_vector, 0.005);
-
-        //self.direction = normalize_array(direction_vector);
-    }
-
-    fn update(&mut self, environment: &mut Arena, decision_netowrk: &MLP) {
-        self.update_position(environment);
-        if environment.cell_has_food(self.grid_location) && !self.has_food {
-            environment.take_food(self.grid_location);
-            //self.direction *= -1.0;
-            self.has_food = true;
-        }
-
-        if environment.cell_is_nest(self.grid_location) && self.has_food {
-            //self.direction *= -1.0;
-            environment.food_returned_to_nest += 0.1;
-            self.has_food = false;
-        }
-
-        if self.has_food {
-            environment.place_food_pheromone(self.grid_location);
-        } else {
-            environment.place_nest_pheromone(self.grid_location);
-        }
-
-        self.update_direction(environment, decision_netowrk);
-    }
-
     pub fn step(&mut self, action: Array<f32, Dim<[usize; 1]>>, arena: &mut Arena) -> (Array<f32, Dim<[usize; 2]>>, f32) {
         self.direction = rotate_array2(&self.direction, action[0]);
         self.update_position(arena);
@@ -208,13 +119,11 @@ impl Ant {
 
         if arena.cell_has_food(self.grid_location) && !self.has_food {
             arena.take_food(self.grid_location);
-            //self.direction *= -1.0;
             reward += 0.1;
             self.has_food = true;
         }
 
         if arena.cell_is_nest(self.grid_location) && self.has_food {
-            //self.direction *= -1.0;
             reward += 1.;
             self.has_food = false;
         }
@@ -228,29 +137,6 @@ impl Ant {
         let observation = self.get_feature_vector(arena);
 
         (observation, reward)
-    }
-}
-
-
-impl Colony {
-    pub fn new(num_ants: usize, decision_network: MLP) -> Colony {
-        Colony {
-            ants: vec![Ant::new(); num_ants],
-            decision_network,
-        }
-    }
-
-    pub fn update(&mut self, environment: &mut Arena) {
-        for ant in self.ants.iter_mut() {
-            ant.update(environment, &self.decision_network);
-            environment.set_cell_as_visited(ant.grid_location);
-        }
-    }
-
-    pub fn update_piston<E: GenericEvent>(&mut self, environment: &mut Arena, e: &E) {
-        if let Some(_) = e.update_args() {
-            self.update(environment);
-        }
     }
 }
 

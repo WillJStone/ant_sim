@@ -15,7 +15,7 @@ use ndarray_npy::read_npy;
 
 extern crate lib;
 
-use lib::simulation::colony::Colony;
+use lib::simulation::ant::Colony;
 use lib::simulation::arena::Arena;
 use lib::simulation::world_view::{WorldView, WorldViewSettings};
 use lib::neural_network::mlp::MLP;

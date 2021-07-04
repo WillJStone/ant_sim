@@ -161,17 +161,6 @@ impl Arena {
         Ok(self.grid[x_coord as usize][y_coord as usize])
     }
 
-    pub fn perceive_surroundings(&self, index: [usize; 2]) -> Vec<Cell> {
-        let mut surroundings: Vec<Cell> = Vec::new();
-        for i in (index[0] - 1)..(index[0] + 2) {
-            for j in (index[1] -1)..(index[1] + 2) {
-                surroundings.push(self.grid[i][j]);
-            }
-        }
-
-        surroundings
-    }
-
     pub fn total_food_remaining(&self) -> f64 {
         let mut total_food_amount = 0.0;
         for grid_row in self.grid.iter() {
