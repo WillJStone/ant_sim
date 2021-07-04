@@ -22,7 +22,7 @@ pub struct Ant {
 
 
 pub struct Colony {
-    ants: Vec<Ant>,
+    pub ants: Vec<Ant>,
     decision_network: MLP,
 }
 
