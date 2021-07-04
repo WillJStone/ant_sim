@@ -53,3 +53,19 @@ impl Environment {
         }
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn new_environment() {
+        let num_ants = 50;
+        let mut environment = Environment::new(50, 0.99, num_ants);
+        let actions = vec![Array::zeros(1); num_ants];
+        let result = environment.step(actions);
+
+        assert_eq!(result.observations.len(), num_ants);
+        assert_eq!(result.rewards.len(), num_ants);
+    }
+}

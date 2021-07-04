@@ -207,7 +207,7 @@ mod tests {
     use super::*;
     #[test]
     fn new_environment() {
-        let environment = Arena::new(100, 0.9);
-        assert_eq!(environment.grid[1][1].coordinates, [1, 1]);
+        let arena = Arena::new(100, 0.9);
+        assert_eq!(arena.grid[1][1].coordinates, [1, 1]);
     }
 }
