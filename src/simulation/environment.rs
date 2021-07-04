@@ -10,7 +10,7 @@ pub struct Environment {
 
 
 pub struct StepResult { 
-    pub observations: Vec<Array<f32, Dim<[usize; 1]>>>,
+    pub observations: Vec<Array<f32, Dim<[usize; 2]>>>,
     pub rewards: Vec<f32>,
     pub done: bool,
 }
@@ -33,5 +33,23 @@ impl Environment {
 
         self.arena = arena;
         self.colony = colony;
+    }
+
+    pub fn step(&mut self, actions: Vec<Array<f32, Dim<[usize; 1]>>>) -> StepResult {
+        assert_eq!(actions.len(), self.colony.len());
+
+        let mut observations: Vec<Array<f32, Dim<[usize; 2]>>> = Vec::new();
+        let mut rewards: Vec<f32> = Vec::new();
+        for i in 0..actions.len() { 
+            let (observation, reward) = self.colony[i].step(actions[i].clone(), &mut self.arena);
+            observations.push(observation);
+            rewards.push(reward);
+        }
+
+        StepResult {
+            observations,
+            rewards,
+            done: false
+        }
     }
 }

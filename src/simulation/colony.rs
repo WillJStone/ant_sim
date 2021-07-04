@@ -198,6 +198,36 @@ impl Ant {
 
         self.update_direction(environment, decision_netowrk);
     }
+
+    pub fn step(&mut self, action: Array<f32, Dim<[usize; 1]>>, arena: &mut Arena) -> (Array<f32, Dim<[usize; 2]>>, f32) {
+        self.direction = rotate_array2(&self.direction, action[0]);
+        self.update_position(arena);
+
+        let mut reward: f32 = 0.;
+
+        if arena.cell_has_food(self.grid_location) && !self.has_food {
+            arena.take_food(self.grid_location);
+            //self.direction *= -1.0;
+            reward += 0.1;
+            self.has_food = true;
+        }
+
+        if arena.cell_is_nest(self.grid_location) && self.has_food {
+            //self.direction *= -1.0;
+            reward += 1.;
+            self.has_food = false;
+        }
+
+        if self.has_food {
+            arena.place_food_pheromone(self.grid_location);
+        } else {
+            arena.place_nest_pheromone(self.grid_location);
+        }
+
+        let observation = self.get_feature_vector(arena);
+
+        (observation, reward)
+    }
 }
 
 
