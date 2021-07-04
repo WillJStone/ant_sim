@@ -2,7 +2,6 @@ extern crate piston;
 extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
-// extern crate blas_src;
 extern crate openblas_src;
 
 
@@ -11,12 +10,12 @@ use piston::event_loop::{Events, EventLoop, EventSettings};
 use piston::input::RenderEvent;
 use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, GlGraphics};
+use ndarray::Array;
 use ndarray_npy::read_npy;
 
 extern crate lib;
 
-use lib::simulation::ant::Colony;
-use lib::simulation::arena::Arena;
+use lib::simulation::environment::Environment;
 use lib::simulation::world_view::{WorldView, WorldViewSettings};
 use lib::neural_network::mlp::MLP;
 
@@ -46,20 +45,19 @@ fn main() {
     //let weights = read_npy("/home/reeldata/Documents/ant_sim/src/visualize_simulation/trial_3.npy").unwrap();
 
     let decision_network: MLP = MLP::new(38, vec![16, 1]);
-    let mut colony = Colony::new(NUM_ANTS, decision_network);
-    let mut environment = Arena::new(ARENA_SIZE, DIFFUSION_RATE);
+    let mut environment = Environment::new(ARENA_SIZE, DIFFUSION_RATE, NUM_ANTS);
     let world_view = WorldView::new(WorldViewSettings::new());
 
     while let Some(e) = events.next(&mut window) {
-        environment.update_piston(&e);
-        colony.update_piston(&mut environment, &e);
+        let actions = vec![Array::zeros(1); NUM_ANTS];
+        environment.step_piston(actions, &e);
         
         if let Some(args) = e.render_args() {
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
 
                 clear([0.0; 4], g);
-                world_view.draw(&environment, &c, g);
+                world_view.draw(&environment.arena, &c, g);
             });
         }
     }

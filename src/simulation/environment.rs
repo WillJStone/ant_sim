@@ -1,10 +1,11 @@
 use ndarray::{Array, Dim};
+use piston::input::GenericEvent;
 
 use crate::simulation::arena::Arena;
 use crate::simulation::ant::Ant;
 
 pub struct Environment {
-    arena: Arena,
+    pub arena: Arena,
     colony: Vec<Ant>,
 }
 
@@ -35,6 +36,20 @@ impl Environment {
         self.colony = colony;
     }
 
+    pub fn step_piston<E: GenericEvent>(&mut self, actions: Vec<Array<f32, Dim<[usize; 1]>>>, e: &E) {
+        if let Some(_) = e.update_args() {
+            assert_eq!(actions.len(), self.colony.len());
+
+            let mut observations: Vec<Array<f32, Dim<[usize; 2]>>> = Vec::new();
+            let mut rewards: Vec<f32> = Vec::new();
+            for i in 0..actions.len() { 
+                let (observation, reward) = self.colony[i].step(actions[i].clone(), &mut self.arena);
+                observations.push(observation);
+                rewards.push(reward);
+            }
+        }
+    }
+
     pub fn step(&mut self, actions: Vec<Array<f32, Dim<[usize; 1]>>>) -> StepResult {
         assert_eq!(actions.len(), self.colony.len());
 
@@ -59,7 +74,7 @@ impl Environment {
 mod tests {
     use super::*;
     #[test]
-    fn new_environment() {
+    fn test_step() {
         let num_ants = 50;
         let mut environment = Environment::new(50, 0.99, num_ants);
         let actions = vec![Array::zeros(1); num_ants];
